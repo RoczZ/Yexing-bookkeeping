@@ -1,0 +1,163 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0;
+}
+
+.phone-container {
+    width: 100%;
+    max-width: 360px;
+    height: 100%;
+    max-height: 640px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.phone-screen {
+    width: 100%;
+    height: 640px;
+    max-height: 90vh;
+    background-color: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    overflow: auto;
+}
+
+.scrollable-content {
+    width: 100%;
+    background-color: #ffffff;
+    padding: 20px;
+}
+
+/* Logo样式 */
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 40px;
+    margin-top: 30px;
+}
+
+.logo-text {
+    font-size: 24px;
+    font-weight: 700;
+    color: #000;
+}
+
+.logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 50%;
+}
+
+/* 模块1：日期和收支统计 */
+.header-section {
+    margin-bottom: 25px;
+}
+
+.date {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.days-left {
+    font-size: 14px;
+    color: #999;
+}
+
+.welcome {
+    font-size: 20px;
+    font-weight: 600;
+    color: #000;
+    margin-bottom: 20px;
+    text-align: left;
+    line-height: 1.2;
+}
+
+.today-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.stat-item.total {
+    font-weight: 600;
+    border-bottom: 2px solid #000;
+    padding-bottom: 16px;
+}
+
+.stat-item .label {
+    font-size: 14px;
+    color: #333;
+}
+
+.stat-item .value {
+    font-size: 16px;
+    color: #000;
+    font-weight: 500;
+}
+
+/* 模块2：支出和收入按钮 */
+.action-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.expense-btn, .income-btn {
+    flex: 1;
+    padding: 16px 0;
+    border: 1px solid #000;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.expense-btn {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.income-btn {
+    background-color: #000000;
+    color: #ffffff;
+    border: none;
+}
+
+.expense-btn:hover {
+    background-color: #f5f5f5;
+}
+
+.income-btn:hover {
+    background-color: #333333;
+}

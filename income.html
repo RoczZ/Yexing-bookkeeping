@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>收入页 - 夜行记账</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 收入页特有样式 */
+        .income-page {
+            padding: 20px;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .type-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 16px;
+        }
+        
+        .type-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .type-option {
+            padding: 16px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .type-option.selected {
+            border-color: #000;
+            background-color: #f5f5f5;
+        }
+        
+        .amount-section {
+            margin-bottom: 40px;
+        }
+        
+        .amount-input {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-size: 18px;
+            text-align: center;
+            outline: none;
+        }
+        
+        .amount-input:focus {
+            border-color: #000;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background-color: #000;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            background-color: #333;
+        }
+        
+        .error-message {
+            color: #ff3b30;
+            font-size: 14px;
+            text-align: center;
+            margin-top: 16px;
+            min-height: 20px;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 16px;
+            color: #000;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <div class="phone-screen">
+            <div class="scrollable-content income-page">
+                <a href="index.html" class="back-btn">← 返回</a>
+                
+                <h1 class="page-title">收入页</h1>
+                
+                <!-- 模块1：收入类型 -->
+                <div class="type-section">
+                    <div class="section-title">收入类型</div>
+                    <div class="type-options">
+                        <div class="type-option" data-type="工资">工资</div>
+                        <div class="type-option" data-type="搬砖">搬砖</div>
+                        <div class="type-option" data-type="票务">票务</div>
+                        <div class="type-option" data-type="其他">其他</div>
+                    </div>
+                    <!-- 其他类型自定义输入 -->
+                    <div class="other-input-section" style="margin-top: 16px; display: none;">
+                        <input type="text" class="amount-input" placeholder="请输入其他收入类型（限5字）" id="otherTypeInput" maxlength="5">
+                    </div>
+                </div>
+                
+                <!-- 模块2：收入金额 -->
+                <div class="amount-section">
+                    <div class="section-title">收入金额</div>
+                    <input type="text" class="amount-input" placeholder="请输入金额" id="amountInput">
+                </div>
+                
+                <!-- 错误提示 -->
+                <div class="error-message" id="errorMessage"></div>
+                
+                <!-- 模块3：提交按钮 -->
+                <button class="submit-btn" onclick="submitIncome()">提交</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 全局变量
+        let selectedType = null;
+        
+        // 初始化
+        function init() {
+            // 绑定类型选择事件
+            const typeOptions = document.querySelectorAll('.type-option');
+            const otherInputSection = document.querySelector('.other-input-section');
+            const otherTypeInput = document.getElementById('otherTypeInput');
+            
+            typeOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // 移除其他选项的选中状态
+                    typeOptions.forEach(opt => opt.classList.remove('selected'));
+                    // 添加当前选项的选中状态
+                    this.classList.add('selected');
+                    
+                    const type = this.dataset.type;
+                    
+                    if (type === '其他') {
+                        // 显示自定义输入框
+                        otherInputSection.style.display = 'block';
+                        // 聚焦到输入框
+                        otherTypeInput.focus();
+                        // 初始化为空
+                        selectedType = null;
+                    } else {
+                        // 隐藏自定义输入框
+                        otherInputSection.style.display = 'none';
+                        // 保存选中的类型
+                        selectedType = type;
+                    }
+                    
+                    // 清空错误提示
+                    document.getElementById('errorMessage').textContent = '';
+                });
+            });
+            
+            // 其他类型输入框事件
+            if (otherTypeInput) {
+                otherTypeInput.addEventListener('input', function() {
+                    // 保存输入的类型
+                    selectedType = this.value.trim();
+                    // 清空错误提示
+                    document.getElementById('errorMessage').textContent = '';
+                });
+            }
+            
+            // 金额输入限制（只允许输入数字）
+            const amountInput = document.getElementById('amountInput');
+            amountInput.addEventListener('input', function(e) {
+                // 只保留数字
+                this.value = this.value.replace(/[^0-9]/g, '');
+                // 清空错误提示
+                document.getElementById('errorMessage').textContent = '';
+            });
+        }
+        
+        // 提交收入
+        function submitIncome() {
+            const amountInput = document.getElementById('amountInput');
+            const amount = amountInput.value.trim();
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // 验证逻辑
+            if (!selectedType && !amount) {
+                errorMessage.textContent = '请选收入类型和填写收入金额';
+                return false;
+            } else if (!selectedType) {
+                errorMessage.textContent = '请选中收入类型';
+                return false;
+            } else if (!amount) {
+                errorMessage.textContent = '请填写收入金额';
+                return false;
+            }
+            
+            // 验证通过，可以提交数据
+            
+            // 生成当前日期
+            const now = new Date();
+            const date = now.getFullYear() + '年' + 
+                        (now.getMonth() + 1).toString().padStart(2, '0') + '月' + 
+                        now.getDate().toString().padStart(2, '0') + '日';
+            const time = now.getHours().toString().padStart(2, '0') + ':' + 
+                        now.getMinutes().toString().padStart(2, '0');
+            
+            // 创建收入记录
+            const incomeRecord = {
+                id: Date.now(), // 使用时间戳作为唯一ID
+                type: selectedType,
+                amount: parseInt(amount),
+                date: date,
+                time: time,
+                category: 'income' // 标记为收入
+            };
+            
+            // 从localStorage获取现有记录
+            let records = JSON.parse(localStorage.getItem('financeRecords') || '[]');
+            
+            // 添加新记录
+            records.push(incomeRecord);
+            
+            // 保存到localStorage
+            localStorage.setItem('financeRecords', JSON.stringify(records));
+            
+            console.log('提交收入:', incomeRecord);
+            
+            // 提交成功后跳转到首页
+            alert('收入添加成功！');
+            window.location.href = 'index.html';
+        }
+        
+        // 页面加载完成后初始化
+        window.onload = init;
+    </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>清除数据 - 夜行记账</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .clear-page {
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .warning {
+            color: #ff3b30;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .clear-btn {
+            background-color: #ff3b30;
+            color: white;
+        }
+        
+        .cancel-btn {
+            background-color: #f5f5f5;
+            color: #000;
+        }
+        
+        .clear-btn:hover {
+            background-color: #ff2d55;
+        }
+        
+        .cancel-btn:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <div class="phone-screen">
+            <div class="scrollable-content clear-page">
+                <h1 class="page-title">清除所有数据</h1>
+                
+                <p class="warning">⚠️ 警告：此操作将删除所有资金明细记录，且无法恢复！</p>
+                
+                <p>确定要清除所有资金流水记录吗？</p>
+                
+                <div style="margin-top: 40px;">
+                    <button class="btn clear-btn" onclick="clearAllData()">确定清除</button>
+                    <button class="btn cancel-btn" onclick="goBack()">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 清除所有数据
+        function clearAllData() {
+            if (confirm('确定要清除所有资金明细记录吗？此操作无法恢复！')) {
+                // 清除localStorage中的资金记录
+                localStorage.removeItem('financeRecords');
+                
+                // 显示清除成功消息
+                alert('所有数据已成功清除！');
+                
+                // 跳转到首页
+                window.location.href = 'index.html';
+            }
+        }
+        
+        // 返回首页
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

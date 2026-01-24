@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资金流水 - 夜行记账</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 记录页面特有样式 */
+        .records-page {
+            padding: 20px;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .record-item {
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 12px;
+        }
+        
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .record-type {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .record-amount {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .record-amount.expense {
+            color: #ff3b30;
+        }
+        
+        .record-amount.income {
+            color: #34c759;
+        }
+        
+        .record-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .record-date {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .record-time {
+            font-size: 14px;
+            color: #999;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 16px;
+            color: #000;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* 筛选组件样式 */
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .filter-btn.active {
+            border-color: #000;
+            background-color: #000;
+            color: white;
+        }
+        
+        .filter-btn:hover {
+            border-color: #000;
+            background-color: #f0f0f0;
+        }
+        
+        .filter-btn.active:hover {
+            background-color: #333;
+        }
+        
+        /* 日期选择器样式 */
+        .date-picker-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        
+        .date-picker-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 12px;
+        }
+        
+        .date-picker {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <div class="phone-screen">
+            <div class="scrollable-content records-page">
+                <a href="index.html" class="back-btn">← 返回</a>
+                
+                <h1 class="page-title">资金流水</h1>
+                
+                <!-- 筛选组件 -->
+                <div class="filter-section" style="margin-bottom: 20px;">
+                    <div class="filter-options" style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px;">
+                        <button class="filter-btn active" data-filter="all">全部</button>
+                        <button class="filter-btn" data-filter="month">月份</button>
+                        <button class="filter-btn" data-filter="year">年份</button>
+                    </div>
+                    
+                    <!-- 日期选择器 -->
+                    <div class="date-picker-section" id="datePickerSection" style="display: none;">
+                        <div class="date-picker-title" id="datePickerTitle">选择月份</div>
+                        <input type="month" class="date-picker" id="datePicker">
+                    </div>
+                </div>
+                
+                <!-- 累计金额显示 -->
+                <div class="total-amount-section" style="margin-bottom: 20px; padding: 15px; border-radius: 10px; background-color: #f5f5f5;">
+                    <div class="total-amount-label" style="font-size: 14px; color: #666; margin-bottom: 5px;">累计金额：</div>
+                    <div class="total-amount" id="totalAmount" style="font-size: 20px; font-weight: 600; color: #000;">¥0</div>
+                </div>
+                
+                <!-- 记录列表 -->
+                <div class="records-list" id="recordsList">
+                    <!-- 记录项会通过JavaScript动态生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 全局变量
+        let currentFilter = 'all';
+        let currentFilterValue = '';
+        
+        // 计算累计金额
+        function calculateTotalAmount(records) {
+            return records.reduce((total, record) => {
+                if (record.category === 'income') {
+                    return total + record.amount;
+                } else {
+                    return total - record.amount;
+                }
+            }, 0);
+        }
+        
+        // 更新累计金额显示
+        function updateTotalAmountDisplay(totalAmount) {
+            const totalAmountElement = document.getElementById('totalAmount');
+            const totalAmountLabel = document.querySelector('.total-amount-label');
+            
+            if (totalAmountElement && totalAmountLabel) {
+                // 根据当前筛选条件更新标签
+                if (currentFilter === 'all') {
+                    totalAmountLabel.textContent = '累计金额：';
+                } else if (currentFilter === 'month') {
+                    totalAmountLabel.textContent = '单月累计金额：';
+                } else if (currentFilter === 'year') {
+                    totalAmountLabel.textContent = '年度累计金额：';
+                }
+                
+                // 显示累计金额，正数显示正数，负数显示负数
+                const formattedAmount = totalAmount >= 0 ? `¥${totalAmount}` : `¥${totalAmount}`;
+                totalAmountElement.textContent = formattedAmount;
+                
+                // 根据金额正负设置颜色
+                if (totalAmount > 0) {
+                    totalAmountElement.style.color = '#34c759'; // 绿色
+                } else if (totalAmount < 0) {
+                    totalAmountElement.style.color = '#ff3b30'; // 红色
+                } else {
+                    totalAmountElement.style.color = '#000'; // 黑色
+                }
+            }
+        }
+        
+        // 加载记录
+        function loadRecords() {
+            const recordsList = document.getElementById('recordsList');
+            
+            // 从localStorage获取记录
+            let records = JSON.parse(localStorage.getItem('financeRecords') || '[]');
+            
+            // 应用筛选
+            if (currentFilter !== 'all' && currentFilterValue) {
+                records = records.filter(record => {
+                    const recordDate = record.date;
+                    const recordYear = parseInt(recordDate.split('年')[0]);
+                    const recordMonth = parseInt(recordDate.split('年')[1].split('月')[0]);
+                    
+                    if (currentFilter === 'month') {
+                        // 筛选月份
+                        const [filterYear, filterMonth] = currentFilterValue.split('-');
+                        return recordYear === parseInt(filterYear) && recordMonth === parseInt(filterMonth);
+                    } else if (currentFilter === 'year') {
+                        // 筛选年份
+                        const filterYear = currentFilterValue;
+                        return recordYear === parseInt(filterYear);
+                    }
+                    return true;
+                });
+            }
+            
+            // 计算累计金额
+            const totalAmount = calculateTotalAmount(records);
+            // 更新累计金额显示
+            updateTotalAmountDisplay(totalAmount);
+            
+            // 按时间倒序排序（最新的在前）
+            records.sort((a, b) => b.id - a.id);
+            
+            if (records.length === 0) {
+                // 显示空状态
+                recordsList.innerHTML = `
+                    <div class="empty-state">
+                        <p>暂无资金流水记录</p>
+                        <p style="margin-top: 8px;">您可以通过支出或收入功能添加记录</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // 生成记录列表
+            const recordsHTML = records.map(record => {
+                const amountClass = record.category === 'expense' ? 'expense' : 'income';
+                const amountPrefix = record.category === 'expense' ? '-' : '+';
+                
+                return `
+                    <div class="record-item">
+                        <div class="record-header">
+                            <div class="record-type">${record.type}</div>
+                            <div class="record-amount ${amountClass}">${amountPrefix}¥${record.amount}</div>
+                        </div>
+                        <div class="record-footer">
+                            <div class="record-date">${record.date}</div>
+                            <div class="record-time">${record.time}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            recordsList.innerHTML = recordsHTML;
+        }
+        
+        // 初始化筛选组件
+        function initFilter() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const datePickerSection = document.getElementById('datePickerSection');
+            
+            // 绑定筛选按钮点击事件
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 更新按钮状态
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 更新筛选模式
+                    currentFilter = this.dataset.filter;
+                    
+                    // 显示/隐藏日期选择器
+                    if (currentFilter === 'all') {
+                        datePickerSection.style.display = 'none';
+                        currentFilterValue = '';
+                        loadRecords();
+                    } else if (currentFilter === 'month') {
+                        datePickerSection.style.display = 'block';
+                        
+                        // 重建月份选择器
+                        const now = new Date();
+                        const defaultMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+                        
+                        datePickerSection.innerHTML = `
+                            <div class="date-picker-title">选择月份</div>
+                            <input type="month" class="date-picker" id="datePicker" value="${defaultMonth}">
+                        `;
+                        
+                        // 绑定变化事件
+                        const monthPicker = document.getElementById('datePicker');
+                        monthPicker.addEventListener('change', function() {
+                            if (currentFilter === 'month') {
+                                currentFilterValue = this.value;
+                                loadRecords();
+                            }
+                        });
+                        
+                        currentFilterValue = defaultMonth;
+                        loadRecords();
+                    } else if (currentFilter === 'year') {
+                        datePickerSection.style.display = 'block';
+                        
+                        // 重建年份选择器
+                        const now = new Date();
+                        const defaultYear = now.getFullYear();
+                        
+                        // 生成年份选项（最近10年）
+                        let yearOptions = '';
+                        for (let i = defaultYear + 2; i >= defaultYear - 8; i--) {
+                            yearOptions += `<option value="${i}" ${i === defaultYear ? 'selected' : ''}>${i}年</option>`;
+                        }
+                        
+                        datePickerSection.innerHTML = `
+                            <div class="date-picker-title">选择年份</div>
+                            <select class="date-picker" id="datePicker">
+                                ${yearOptions}
+                            </select>
+                        `;
+                        
+                        // 绑定变化事件
+                        const yearSelect = document.getElementById('datePicker');
+                        yearSelect.addEventListener('change', function() {
+                            if (currentFilter === 'year') {
+                                currentFilterValue = this.value;
+                                loadRecords();
+                            }
+                        });
+                        
+                        currentFilterValue = defaultYear.toString();
+                        loadRecords();
+                    }
+                });
+            });
+        }
+        
+        // 页面加载完成后初始化
+        window.onload = function() {
+            initFilter();
+            loadRecords();
+        };
+    </script>
+</body>
+</html>
