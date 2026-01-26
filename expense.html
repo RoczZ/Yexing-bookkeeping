@@ -114,6 +114,12 @@
                 
                 <h1 class="page-title">支出页</h1>
                 
+                <!-- 模块0：日期选择 -->
+                <div class="date-section" style="margin-bottom: 30px;">
+                    <div class="section-title">选择日期</div>
+                    <input type="date" class="amount-input" id="datePicker">
+                </div>
+                
                 <!-- 模块1：支出类型 -->
                 <div class="type-section">
                     <div class="section-title">支出类型</div>
@@ -150,6 +156,12 @@
         
         // 初始化
         function init() {
+            // 设置默认日期为当天
+            const datePicker = document.getElementById('datePicker');
+            const now = new Date();
+            const today = now.toISOString().split('T')[0];
+            datePicker.value = today;
+            
             // 绑定类型选择事件
             const typeOptions = document.querySelectorAll('.type-option');
             const otherInputSection = document.querySelector('.other-input-section');
@@ -223,11 +235,14 @@
             
             // 验证通过，可以提交数据
             
-            // 生成当前日期
+            // 获取选择的日期
+            const datePicker = document.getElementById('datePicker');
+            const selectedDate = new Date(datePicker.value);
+            const date = selectedDate.getFullYear() + '年' + 
+                        (selectedDate.getMonth() + 1).toString().padStart(2, '0') + '月' + 
+                        selectedDate.getDate().toString().padStart(2, '0') + '日';
+            // 获取当前时间
             const now = new Date();
-            const date = now.getFullYear() + '年' + 
-                        (now.getMonth() + 1).toString().padStart(2, '0') + '月' + 
-                        now.getDate().toString().padStart(2, '0') + '日';
             const time = now.getHours().toString().padStart(2, '0') + ':' + 
                         now.getMinutes().toString().padStart(2, '0');
             
