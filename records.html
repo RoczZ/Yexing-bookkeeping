@@ -153,6 +153,7 @@
                         <button class="filter-btn active" data-filter="all">全部</button>
                         <button class="filter-btn" data-filter="month">月份</button>
                         <button class="filter-btn" data-filter="year">年份</button>
+                        <button class="filter-btn" onclick="window.location.href='statistics.html'">收支统计</button>
                     </div>
                     
                     <!-- 日期选择器 -->
@@ -281,7 +282,10 @@
                         </div>
                         <div class="record-footer">
                             <div class="record-date">${record.date}</div>
-                            <div class="record-time">${record.time}</div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div class="record-time">${record.time}</div>
+                                <button class="delete-btn" onclick="deleteRecord(${record.id})" style="padding: 4px 8px; background-color: #ff3b30; color: white; border: none; border-radius: 4px; font-size: 12px; cursor: pointer;">删除</button>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -367,6 +371,23 @@
                     }
                 });
             });
+        }
+        
+        // 删除记录
+        function deleteRecord(id) {
+            if (confirm('确定要删除这条记录吗？')) {
+                // 从localStorage获取所有记录
+                let records = JSON.parse(localStorage.getItem('financeRecords') || '[]');
+                
+                // 过滤掉要删除的记录
+                records = records.filter(record => record.id !== id);
+                
+                // 保存更新后的记录回localStorage
+                localStorage.setItem('financeRecords', JSON.stringify(records));
+                
+                // 重新加载记录列表
+                loadRecords();
+            }
         }
         
         // 页面加载完成后初始化

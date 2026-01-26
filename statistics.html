@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>收支统计 - 夜行记账</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .statistics-page {
+            padding: 20px;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 16px;
+            color: #000;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .analysis-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f5f5f5;
+            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn.active {
+            border-color: #000;
+            background-color: #000;
+            color: white;
+        }
+        
+        .tab-btn:hover {
+            border-color: #000;
+            background-color: #f0f0f0;
+        }
+        
+        .tab-btn.active:hover {
+            background-color: #333;
+        }
+        
+        .chart-container {
+            margin-bottom: 30px;
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .chart {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .chart-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .chart-label {
+            width: 60px;
+            font-size: 14px;
+            color: #666;
+            text-align: right;
+        }
+        
+        .chart-bar-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .chart-bar {
+            height: 30px;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            min-width: 0;
+        }
+        
+        .chart-bar.expense {
+            background: linear-gradient(90deg, #ff6b6b, #ff3b30);
+        }
+        
+        .chart-bar.income {
+            background: linear-gradient(90deg, #5cb85c, #34c759);
+        }
+        
+        .chart-value {
+            width: 80px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            text-align: right;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        
+        .total-section {
+            padding: 15px;
+            border-radius: 10px;
+            background-color: #f5f5f5;
+            margin-bottom: 20px;
+        }
+        
+        .total-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .total-amount {
+            font-size: 24px;
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .total-amount.expense {
+            color: #ff3b30;
+        }
+        
+        .total-amount.income {
+            color: #34c759;
+        }
+        
+        .date-picker-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        
+        .date-picker-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 12px;
+        }
+        
+        .date-picker {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: white;
+        }
+        
+        .year-picker-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <div class="phone-screen">
+            <div class="scrollable-content statistics-page">
+                <a href="records.html" class="back-btn">← 返回</a>
+                
+                <h1 class="page-title">收支统计</h1>
+                
+                <div class="analysis-tabs">
+                    <button class="tab-btn active" onclick="switchTab('expense')">支出分析</button>
+                    <button class="tab-btn" onclick="switchTab('income')">收入分析</button>
+                </div>
+                
+                <div class="date-picker-section">
+                    <div class="date-picker-title">选择月份</div>
+                    <input type="month" class="date-picker" id="datePicker">
+                </div>
+                
+                <div class="total-section">
+                    <div class="total-label" id="totalLabel">当月支出总额</div>
+                    <div class="total-amount expense" id="totalAmount">¥0</div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title" id="chartTitle">当月支出统计</div>
+                    <div class="chart" id="chart">
+                        <div class="empty-state">
+                            <p>暂无数据</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="year-picker-section">
+                    <div class="date-picker-title">选择年份</div>
+                    <select class="date-picker" id="yearPicker">
+                    </select>
+                </div>
+                
+                <div class="total-section">
+                    <div class="total-label" id="yearTotalLabel">年度支出总额</div>
+                    <div class="total-amount expense" id="yearTotalAmount">¥0</div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title" id="yearChartTitle">年度支出统计</div>
+                    <div class="chart" id="yearChart">
+                        <div class="empty-state">
+                            <p>暂无数据</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentTab = 'expense';
+        let selectedYear = new Date().getFullYear();
+        let selectedMonth = new Date().getMonth() + 1;
+        let selectedYearForYearStats = new Date().getFullYear();
+        
+        function initDatePicker() {
+            const datePicker = document.getElementById('datePicker');
+            const defaultMonth = selectedYear + '-' + String(selectedMonth).padStart(2, '0');
+            datePicker.value = defaultMonth;
+            
+            datePicker.addEventListener('change', function() {
+                const [year, month] = this.value.split('-');
+                selectedYear = parseInt(year);
+                selectedMonth = parseInt(month);
+                updateLabels();
+                loadStatistics();
+            });
+        }
+        
+        function initYearPicker() {
+            const yearPicker = document.getElementById('yearPicker');
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            
+            let yearOptions = '';
+            for (let i = currentYear + 2; i >= currentYear - 8; i--) {
+                yearOptions += `<option value="${i}" ${i === currentYear ? 'selected' : ''}>${i}年</option>`;
+            }
+            
+            yearPicker.innerHTML = yearOptions;
+            
+            yearPicker.addEventListener('change', function() {
+                selectedYearForYearStats = parseInt(this.value);
+                updateYearLabels();
+                loadYearStatistics();
+            });
+        }
+        
+        function updateLabels() {
+            const totalLabel = document.getElementById('totalLabel');
+            const chartTitle = document.getElementById('chartTitle');
+            
+            const monthText = `${selectedYear}年${selectedMonth}月`;
+            
+            if (currentTab === 'expense') {
+                totalLabel.textContent = `${monthText}支出总额`;
+                chartTitle.textContent = `${monthText}支出统计`;
+            } else {
+                totalLabel.textContent = `${monthText}收入总额`;
+                chartTitle.textContent = `${monthText}收入统计`;
+            }
+        }
+        
+        function updateYearLabels() {
+            const yearTotalLabel = document.getElementById('yearTotalLabel');
+            const yearChartTitle = document.getElementById('yearChartTitle');
+            const yearTotalAmount = document.getElementById('yearTotalAmount');
+            
+            const yearText = `${selectedYearForYearStats}年`;
+            
+            if (currentTab === 'expense') {
+                yearTotalLabel.textContent = `${yearText}支出总额`;
+                yearChartTitle.textContent = `${yearText}支出统计`;
+                yearTotalAmount.className = 'total-amount expense';
+            } else {
+                yearTotalLabel.textContent = `${yearText}收入总额`;
+                yearChartTitle.textContent = `${yearText}收入统计`;
+                yearTotalAmount.className = 'total-amount income';
+            }
+        }
+        
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const totalAmount = document.getElementById('totalAmount');
+            
+            if (tab === 'expense') {
+                totalAmount.className = 'total-amount expense';
+            } else {
+                totalAmount.className = 'total-amount income';
+            }
+            
+            updateLabels();
+            updateYearLabels();
+            loadStatistics();
+            loadYearStatistics();
+        }
+        
+        function loadStatistics() {
+            const chart = document.getElementById('chart');
+            const totalAmount = document.getElementById('totalAmount');
+            
+            const records = JSON.parse(localStorage.getItem('financeRecords') || '[]');
+            
+            const monthlyRecords = records.filter(record => {
+                const recordDate = record.date;
+                const recordYear = parseInt(recordDate.split('年')[0]);
+                const recordMonth = parseInt(recordDate.split('年')[1].split('月')[0]);
+                
+                return recordYear === selectedYear && recordMonth === selectedMonth && record.category === currentTab;
+            });
+            
+            if (monthlyRecords.length === 0) {
+                chart.innerHTML = `
+                    <div class="empty-state">
+                        <p>暂无数据</p>
+                    </div>
+                `;
+                totalAmount.textContent = '¥0';
+                return;
+            }
+            
+            const typeStats = {};
+            monthlyRecords.forEach(record => {
+                if (!typeStats[record.type]) {
+                    typeStats[record.type] = 0;
+                }
+                typeStats[record.type] += record.amount;
+            });
+            
+            const total = Object.values(typeStats).reduce((sum, amount) => sum + amount, 0);
+            totalAmount.textContent = `¥${total}`;
+            
+            const sortedTypes = Object.entries(typeStats).sort((a, b) => b[1] - a[1]);
+            const maxAmount = sortedTypes[0][1];
+            
+            const chartHTML = sortedTypes.map(([type, amount]) => {
+                const percentage = (amount / maxAmount) * 100;
+                return `
+                    <div class="chart-item">
+                        <div class="chart-label">${type}</div>
+                        <div class="chart-bar-container">
+                            <div class="chart-bar ${currentTab}" style="width: ${percentage}%"></div>
+                        </div>
+                        <div class="chart-value">¥${amount}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            chart.innerHTML = chartHTML;
+        }
+        
+        function loadYearStatistics() {
+            const yearChart = document.getElementById('yearChart');
+            const yearTotalAmount = document.getElementById('yearTotalAmount');
+            
+            const records = JSON.parse(localStorage.getItem('financeRecords') || '[]');
+            
+            const yearlyRecords = records.filter(record => {
+                const recordDate = record.date;
+                const recordYear = parseInt(recordDate.split('年')[0]);
+                
+                return recordYear === selectedYearForYearStats && record.category === currentTab;
+            });
+            
+            if (yearlyRecords.length === 0) {
+                yearChart.innerHTML = `
+                    <div class="empty-state">
+                        <p>暂无数据</p>
+                    </div>
+                `;
+                yearTotalAmount.textContent = '¥0';
+                return;
+            }
+            
+            const typeStats = {};
+            yearlyRecords.forEach(record => {
+                if (!typeStats[record.type]) {
+                    typeStats[record.type] = 0;
+                }
+                typeStats[record.type] += record.amount;
+            });
+            
+            const total = Object.values(typeStats).reduce((sum, amount) => sum + amount, 0);
+            yearTotalAmount.textContent = `¥${total}`;
+            
+            const sortedTypes = Object.entries(typeStats).sort((a, b) => b[1] - a[1]);
+            const maxAmount = sortedTypes[0][1];
+            
+            const yearChartHTML = sortedTypes.map(([type, amount]) => {
+                const percentage = (amount / maxAmount) * 100;
+                return `
+                    <div class="chart-item">
+                        <div class="chart-label">${type}</div>
+                        <div class="chart-bar-container">
+                            <div class="chart-bar ${currentTab}" style="width: ${percentage}%"></div>
+                        </div>
+                        <div class="chart-value">¥${amount}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            yearChart.innerHTML = yearChartHTML;
+        }
+        
+        window.onload = function() {
+            initDatePicker();
+            initYearPicker();
+            updateLabels();
+            updateYearLabels();
+            loadStatistics();
+            loadYearStatistics();
+        };
+    </script>
+</body>
+</html>
