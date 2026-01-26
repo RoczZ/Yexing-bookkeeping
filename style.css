@@ -31,13 +31,17 @@ body {
     background-color: #ffffff;
     border-radius: 20px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .scrollable-content {
     width: 100%;
     background-color: #ffffff;
     padding: 20px;
+    flex: 1;
+    overflow-y: auto;
 }
 
 /* Logo样式 */
@@ -46,8 +50,8 @@ body {
     align-items: center;
     justify-content: center;
     gap: 12px;
-    margin-bottom: 40px;
-    margin-top: 30px;
+    margin-bottom: 30px;
+    margin-top: 20px;
 }
 
 .logo-text {
@@ -131,10 +135,10 @@ body {
 
 .expense-btn, .income-btn {
     flex: 1;
-    padding: 16px 0;
+    padding: 12px 0;
     border: 1px solid #000;
-    border-radius: 12px;
-    font-size: 16px;
+    border-radius: 10px;
+    font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -160,4 +164,38 @@ body {
 
 .income-btn:hover {
     background-color: #333333;
+}
+
+/* 底部固定菜单栏 */
+.bottom-nav {
+    background-color: #fff;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0;
+    z-index: 1000;
+}
+
+.bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: #666;
+    font-size: 12px;
+    width: 33.33%;
+}
+
+.bottom-nav-item.active {
+    color: #000;
+}
+
+.bottom-nav-icon {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+/* 为滚动内容添加底部padding，避免被导航栏遮挡 */
+.scrollable-content {
+    padding-bottom: 80px;
 }
