@@ -50,8 +50,8 @@ body {
     align-items: center;
     justify-content: center;
     gap: 12px;
-    margin-bottom: 30px;
-    margin-top: 20px;
+    margin-bottom: 40px;
+    margin-top: 30px;
 }
 
 .logo-text {
@@ -172,27 +172,23 @@ body {
     border-top: 1px solid #e0e0e0;
     display: flex;
     justify-content: space-around;
-    padding: 8px 0;
+    padding: 12px 0;
     z-index: 1000;
 }
 
 .bottom-nav-item {
     display: flex;
-    flex-direction: column;
     align-items: center;
+    justify-content: center;
     text-decoration: none;
     color: #666;
-    font-size: 12px;
+    font-size: 14px;
     width: 33.33%;
 }
 
 .bottom-nav-item.active {
     color: #000;
-}
-
-.bottom-nav-icon {
-    font-size: 20px;
-    margin-bottom: 4px;
+    font-weight: bold;
 }
 
 /* 为滚动内容添加底部padding，避免被导航栏遮挡 */
