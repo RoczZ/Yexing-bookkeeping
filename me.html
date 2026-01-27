@@ -25,6 +25,30 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             padding: 12px;
             margin-bottom: 20px;
+            position: relative;
+        }
+        
+        /* 当月累计金额 */
+        .month-total {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
+            font-size: 12px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .month-total-amount {
+            font-weight: 600;
+            margin-left: 6px;
+        }
+        
+        .month-total-amount.positive {
+            color: #ff3b30;
+        }
+        
+        .month-total-amount.negative {
+            color: #34c759;
         }
         
         /* 月份导航 */
@@ -188,6 +212,81 @@
             generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
         }
         
+        // 计算当天的收支合计
+        function calculateDayAmount(year, month, day) {
+            const records = JSON.parse(localStorage.getItem('financeRecords') || '[]');
+            const targetDate = `${year}年${month.toString().padStart(2, '0')}月${day.toString().padStart(2, '0')}日`;
+            
+            return records.reduce((total, record) => {
+                if (record.date === targetDate) {
+                    if (record.category === 'income') {
+                        return total + record.amount;
+                    } else {
+                        return total - record.amount;
+                    }
+                }
+                return total;
+            }, 0);
+        }
+        
+        // 计算当月累计金额
+        function calculateMonthTotal(year, month) {
+            const records = JSON.parse(localStorage.getItem('financeRecords') || '[]');
+            const targetMonth = `${year}年${month.toString().padStart(2, '0')}月`;
+            
+            return records.reduce((total, record) => {
+                if (record.date.startsWith(targetMonth)) {
+                    if (record.category === 'income') {
+                        return total + record.amount;
+                    } else {
+                        return total - record.amount;
+                    }
+                }
+                return total;
+            }, 0);
+        }
+        
+        // 显示当月累计金额
+        function displayMonthTotal(year, month) {
+            const total = calculateMonthTotal(year, month);
+            const calendarContainer = document.querySelector('.calendar-container');
+            
+            // 移除旧的累计金额元素
+            const oldTotalElement = document.querySelector('.month-total');
+            if (oldTotalElement) {
+                oldTotalElement.remove();
+            }
+            
+            const totalElement = document.createElement('div');
+            totalElement.className = 'month-total';
+            
+            let totalClass = '';
+            let totalText = '';
+            
+            // 格式化金额显示 - 累计金额显示原始数值
+            function formatAmount(amount) {
+                return Math.abs(amount).toString();
+            }
+            
+            if (total > 0) {
+                totalClass = 'positive';
+                totalText = `+${formatAmount(total)}`;
+            } else if (total < 0) {
+                totalClass = 'negative';
+                totalText = `-${formatAmount(total)}`;
+            } else {
+                totalText = '0';
+            }
+            
+            totalElement.innerHTML = `
+                当月累计金额：
+                <span class="month-total-amount ${totalClass}">${totalText}</span>
+            `;
+            
+            // 添加新的累计金额元素
+            calendarContainer.appendChild(totalElement);
+        }
+        
         // 生成日历
         function generateCalendar(year, month) {
             const calendarGrid = document.getElementById('calendarGrid');
@@ -236,12 +335,24 @@
                 let amountClass = '';
                 let amountText = '';
                 
+                // 格式化金额显示
+                function formatAmount(amount) {
+                    const absAmount = Math.abs(amount);
+                    if (absAmount >= 10000) {
+                        return (absAmount / 10000).toFixed(1) + 'W';
+                    } else if (absAmount >= 1000) {
+                        return (absAmount / 1000).toFixed(1) + 'K';
+                    } else {
+                        return absAmount.toString();
+                    }
+                }
+                
                 if (dayAmount > 0) {
                     amountClass = 'positive';
-                    amountText = `+¥${dayAmount}`;
+                    amountText = `+${formatAmount(dayAmount)}`;
                 } else if (dayAmount < 0) {
                     amountClass = 'negative';
-                    amountText = `-¥${Math.abs(dayAmount)}`;
+                    amountText = `-${formatAmount(dayAmount)}`;
                 }
                 
                 dayElement.innerHTML = `
@@ -264,23 +375,9 @@
                 `;
                 calendarGrid.appendChild(dayElement);
             }
-        }
-        
-        // 计算当天的收支合计
-        function calculateDayAmount(year, month, day) {
-            const records = JSON.parse(localStorage.getItem('financeRecords') || '[]');
-            const targetDate = `${year}年${month.toString().padStart(2, '0')}月${day.toString().padStart(2, '0')}日`;
             
-            return records.reduce((total, record) => {
-                if (record.date === targetDate) {
-                    if (record.category === 'income') {
-                        return total + record.amount;
-                    } else {
-                        return total - record.amount;
-                    }
-                }
-                return total;
-            }, 0);
+            // 显示当月累计金额
+            displayMonthTotal(year, month + 1);
         }
         
         // 页面加载完成后初始化
