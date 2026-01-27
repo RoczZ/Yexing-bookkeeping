@@ -192,54 +192,52 @@
     </style>
 </head>
 <body>
-    <div class="phone-container">
-        <div class="phone-screen">
-            <div class="scrollable-content statistics-page">
-                <a href="records.html" class="back-btn">← 返回</a>
-                
-                <h1 class="page-title">收支统计</h1>
-                
-                <div class="analysis-tabs">
-                    <button class="tab-btn active" onclick="switchTab('expense')">支出分析</button>
-                    <button class="tab-btn" onclick="switchTab('income')">收入分析</button>
-                </div>
-                
-                <div class="date-picker-section">
-                    <div class="date-picker-title">选择月份</div>
-                    <input type="month" class="date-picker" id="datePicker">
-                </div>
-                
-                <div class="total-section">
-                    <div class="total-label" id="totalLabel">当月支出总额</div>
-                    <div class="total-amount expense" id="totalAmount">¥0</div>
-                </div>
-                
-                <div class="chart-container">
-                    <div class="chart-title" id="chartTitle">当月支出统计</div>
-                    <div class="chart" id="chart">
-                        <div class="empty-state">
-                            <p>暂无数据</p>
-                        </div>
+    <div class="app-container">
+        <div class="main-content statistics-page">
+            <a href="records.html" class="back-btn">← 返回</a>
+            
+            <h1 class="page-title">收支统计</h1>
+            
+            <div class="analysis-tabs">
+                <button class="tab-btn active" onclick="switchTab('expense')">支出分析</button>
+                <button class="tab-btn" onclick="switchTab('income')">收入分析</button>
+            </div>
+            
+            <div class="date-picker-section">
+                <div class="date-picker-title">选择月份</div>
+                <input type="month" class="date-picker" id="datePicker">
+            </div>
+            
+            <div class="total-section">
+                <div class="total-label" id="totalLabel">当月支出总额</div>
+                <div class="total-amount expense" id="totalAmount">¥0</div>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-title" id="chartTitle">当月支出统计</div>
+                <div class="chart" id="chart">
+                    <div class="empty-state">
+                        <p>暂无数据</p>
                     </div>
                 </div>
-                
-                <div class="year-picker-section">
-                    <div class="date-picker-title">选择年份</div>
-                    <select class="date-picker" id="yearPicker">
-                    </select>
-                </div>
-                
-                <div class="total-section">
-                    <div class="total-label" id="yearTotalLabel">年度支出总额</div>
-                    <div class="total-amount expense" id="yearTotalAmount">¥0</div>
-                </div>
-                
-                <div class="chart-container">
-                    <div class="chart-title" id="yearChartTitle">年度支出统计</div>
-                    <div class="chart" id="yearChart">
-                        <div class="empty-state">
-                            <p>暂无数据</p>
-                        </div>
+            </div>
+            
+            <div class="year-picker-section">
+                <div class="date-picker-title">选择年份</div>
+                <select class="date-picker" id="yearPicker">
+                </select>
+            </div>
+            
+            <div class="total-section">
+                <div class="total-label" id="yearTotalLabel">年度支出总额</div>
+                <div class="total-amount expense" id="yearTotalAmount">¥0</div>
+            </div>
+            
+            <div class="chart-container">
+                <div class="chart-title" id="yearChartTitle">年度支出统计</div>
+                <div class="chart" id="yearChart">
+                    <div class="empty-state">
+                        <p>暂无数据</p>
                     </div>
                 </div>
             </div>
