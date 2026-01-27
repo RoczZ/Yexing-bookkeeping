@@ -170,25 +170,30 @@
                         // 计算2026全年存款金额
                         const yearlySavings = calculateYearlySavings();
                         
+                        // 格式化金额显示，最多2位小数
+                        function formatAmount(amount) {
+                            return amount.toFixed(2).replace(/\.?0+$/, '');
+                        }
+                        
                         // 更新页面显示
                         const expenseElement = document.querySelector('.today-stats .stat-item:nth-child(1) .value');
                         if (expenseElement) {
-                            expenseElement.textContent = `${monthlyExpense}元`;
+                            expenseElement.textContent = `${formatAmount(monthlyExpense)}元`;
                         }
                         
                         const incomeElement = document.querySelector('.today-stats .stat-item:nth-child(2) .value');
                         if (incomeElement) {
-                            incomeElement.textContent = `${monthlyIncome}元`;
+                            incomeElement.textContent = `${formatAmount(monthlyIncome)}元`;
                         }
                         
                         const totalElement = document.querySelector('.today-stats .stat-item.total .value');
                         if (totalElement) {
-                            totalElement.textContent = `${total}元`;
+                            totalElement.textContent = `${formatAmount(total)}元`;
                         }
                         
                         const yearlySavingsElement = document.querySelector('.today-stats .stat-item:nth-child(4) .value');
                         if (yearlySavingsElement) {
-                            yearlySavingsElement.textContent = `${yearlySavings}元`;
+                            yearlySavingsElement.textContent = `${formatAmount(yearlySavings)}元`;
                         }
                     }
                     

@@ -504,7 +504,7 @@
         
         // 显示当月累计金额
         function displayMonthTotal(year, month) {
-            const total = calculateMonthTotal(year, month);
+            let total = calculateMonthTotal(year, month);
             const calendarContainer = document.querySelector('.calendar-container');
             
             // 移除旧的累计金额元素
@@ -523,9 +523,15 @@
                 totalBudget = monthlySalary - monthlyRent - monthlySavings;
             }
             
-            // 计算当月剩余额度：剩余额度 = 当月额度 + 当月累计金额
+            // 当月累计金额向上取整
+            total = Math.ceil(total);
+            
+            // 计算当月剩余额度：剩余额度 = 当月额度 - 当月累计金额
             // 按照用户要求的计算公式
-            let remaining = totalBudget + total;
+            let remaining = totalBudget - total;
+            
+            // 当月剩余额度向下取整
+            remaining = Math.floor(remaining);
             
             const totalElement = document.createElement('div');
             totalElement.className = 'month-total';
@@ -535,7 +541,7 @@
             let remainingClass = '';
             let remainingText = '';
             
-            // 格式化金额显示 - 累计金额显示原始数值
+            // 格式化金额显示 - 整数
             function formatAmount(amount) {
                 return Math.abs(amount).toString();
             }
@@ -616,7 +622,11 @@
                 dayElement.className = `calendar-day ${isToday ? 'today' : ''}`;
                 
                 // 计算当天的收支合计
-                const dayAmount = calculateDayAmount(year, month + 1, i);
+                let dayAmount = calculateDayAmount(year, month + 1, i);
+                
+                // 所有数值向上取整
+                dayAmount = Math.ceil(dayAmount);
+                
                 let amountClass = '';
                 let amountText = '';
                 

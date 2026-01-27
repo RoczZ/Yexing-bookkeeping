@@ -204,11 +204,20 @@
                 });
             }
             
-            // 金额输入限制（只允许输入数字）
+            // 金额输入限制（允许输入数字和小数点，最多两位小数）
             const amountInput = document.getElementById('amountInput');
             amountInput.addEventListener('input', function(e) {
-                // 只保留数字
-                this.value = this.value.replace(/[^0-9]/g, '');
+                // 只保留数字和小数点，限制最多两位小数
+                this.value = this.value.replace(/[^0-9.]/g, '');
+                // 确保只有一个小数点
+                const parts = this.value.split('.');
+                if (parts.length > 2) {
+                    this.value = parts[0] + '.' + parts[1];
+                }
+                // 限制小数位数为2位
+                if (parts.length === 2 && parts[1].length > 2) {
+                    this.value = parts[0] + '.' + parts[1].substring(0, 2);
+                }
                 // 清空错误提示
                 document.getElementById('errorMessage').textContent = '';
             });
@@ -279,7 +288,7 @@
             const incomeRecord = {
                 id: Date.now(), // 使用时间戳作为唯一ID
                 type: selectedType,
-                amount: parseInt(amount),
+                amount: parseFloat(amount),
                 date: date,
                 time: time,
                 category: 'income' // 标记为收入

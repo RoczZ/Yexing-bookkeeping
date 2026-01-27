@@ -209,8 +209,13 @@
                     totalAmountLabel.textContent = '年度累计金额：';
                 }
                 
+                // 格式化金额显示，最多2位小数
+                function formatAmount(amount) {
+                    return amount.toFixed(2).replace(/\.?0+$/, '');
+                }
+                
                 // 显示累计金额，正数显示正数，负数显示负数
-                const formattedAmount = totalAmount >= 0 ? `¥${totalAmount}` : `¥${totalAmount}`;
+                const formattedAmount = `¥${formatAmount(totalAmount)}`;
                 totalAmountElement.textContent = formattedAmount;
                 
                 // 根据金额正负设置颜色
@@ -275,6 +280,11 @@
                 return;
             }
             
+            // 格式化金额显示，最多2位小数
+            function formatAmount(amount) {
+                return amount.toFixed(2).replace(/\.?0+$/, '');
+            }
+            
             // 生成记录列表
             const recordsHTML = records.map(record => {
                 const amountClass = record.category === 'expense' ? 'expense' : 'income';
@@ -284,7 +294,7 @@
                     <div class="record-item">
                         <div class="record-header">
                             <div class="record-type">${record.type}</div>
-                            <div class="record-amount ${amountClass}">${amountPrefix}¥${record.amount}</div>
+                            <div class="record-amount ${amountClass}">${amountPrefix}¥${formatAmount(record.amount)}</div>
                         </div>
                         <div class="record-footer">
                             <div class="record-date">${record.date}</div>
