@@ -523,15 +523,16 @@
                 totalBudget = monthlySalary - monthlyRent - monthlySavings;
             }
             
-            // 当月累计金额向上取整
-            total = Math.ceil(total);
+            // 当月累计金额向上取整，对于负数（支出），向上取整是指向更小的方向取整
+            if (total < 0) {
+                total = Math.floor(total);
+            } else {
+                total = Math.ceil(total);
+            }
             
-            // 计算当月剩余额度：剩余额度 = 当月额度 - 当月累计金额
+            // 计算当月剩余额度：剩余额度 = 当月累计金额 - 当月额度
             // 按照用户要求的计算公式
-            let remaining = totalBudget - total;
-            
-            // 当月剩余额度向下取整
-            remaining = Math.floor(remaining);
+            let remaining = total - totalBudget;
             
             const totalElement = document.createElement('div');
             totalElement.className = 'month-total';
@@ -624,8 +625,12 @@
                 // 计算当天的收支合计
                 let dayAmount = calculateDayAmount(year, month + 1, i);
                 
-                // 所有数值向上取整
-                dayAmount = Math.ceil(dayAmount);
+                // 所有数值向上取整，确保负数也正确向上取整（如-4.5显示-5）
+                if (dayAmount < 0) {
+                    dayAmount = Math.floor(dayAmount);
+                } else {
+                    dayAmount = Math.ceil(dayAmount);
+                }
                 
                 let amountClass = '';
                 let amountText = '';
