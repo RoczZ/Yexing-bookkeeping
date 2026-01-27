@@ -8,24 +8,17 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     width: 100vw;
     height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #f0f0f0;
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
-.phone-container {
+.app-container {
     width: 100%;
     max-width: 360px;
-    height: 100%;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-}
-
-.phone-screen {
-    width: 100%;
     height: 100%;
     background-color: #ffffff;
     border-radius: 20px;
@@ -33,15 +26,20 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    position: relative;
 }
 
-.scrollable-content {
+.main-content {
     width: 100%;
     background-color: #ffffff;
     padding: 20px;
     flex: 1;
     overflow-y: auto;
-    padding-bottom: calc(20px + 60px); /* 为底部导航栏留出空间 */
+}
+
+/* 为滚动内容添加底部padding，避免被导航栏遮挡 */
+.main-content {
+    padding-bottom: calc(20px + 80px);
 }
 
 /* Logo样式 */
@@ -175,8 +173,16 @@ body {
     padding: 12px 0;
     z-index: 1000;
     padding-bottom: calc(12px + env(safe-area-inset-bottom));
-    position: sticky;
+    position: fixed;
     bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 360px;
+    margin: 0 auto;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    height: 60px;
+    box-sizing: border-box;
 }
 
 .bottom-nav-item {
