@@ -206,7 +206,7 @@
                 <!-- 每天可消费额度 -->
                 <div style="padding-top: 12px; border-top: 1px solid #f0f0f0;">
                     <div style="font-size: 12px; color: #333;">
-                        剩下额度：<span style="font-size: 14px; font-weight: 600; color: #000; margin-left: 4px; margin-right: 20px;" id="totalBudget">0元</span>
+                        当月额度：<span style="font-size: 14px; font-weight: 600; color: #000; margin-left: 4px; margin-right: 20px;" id="totalBudget">0元</span>
                         每天额度：<span style="font-size: 14px; font-weight: 600; color: #000; margin-left: 4px;" id="dailyBudget">0元</span>
                     </div>
                 </div>
@@ -513,11 +513,27 @@
                 oldTotalElement.remove();
             }
             
+            // 获取当月额度（从上面的设置中获取）
+            const monthlySalary = parseInt(localStorage.getItem('monthlySalary') || '0');
+            const monthlyRent = parseInt(localStorage.getItem('monthlyRent') || '0');
+            const monthlySavings = parseInt(localStorage.getItem('monthlySavings') || '0');
+            
+            let totalBudget = 0;
+            if (monthlySalary > (monthlyRent + monthlySavings)) {
+                totalBudget = monthlySalary - monthlyRent - monthlySavings;
+            }
+            
+            // 计算当月剩余额度：剩余额度 = 当月累计金额 - 当月额度
+            // 按照用户要求的计算公式
+            let remaining = total - totalBudget;
+            
             const totalElement = document.createElement('div');
             totalElement.className = 'month-total';
             
             let totalClass = '';
             let totalText = '';
+            let remainingClass = '';
+            let remainingText = '';
             
             // 格式化金额显示 - 累计金额显示原始数值
             function formatAmount(amount) {
@@ -534,9 +550,22 @@
                 totalText = '0';
             }
             
+            if (remaining > 0) {
+                remainingClass = 'positive';
+                remainingText = `+${formatAmount(remaining)}`;
+            } else if (remaining < 0) {
+                remainingClass = 'negative';
+                remainingText = `-${formatAmount(remaining)}`;
+            } else {
+                remainingText = '0';
+            }
+            
             totalElement.innerHTML = `
                 当月累计金额：
                 <span class="month-total-amount ${totalClass}">${totalText}</span>
+                <span style="margin-left: 20px;">当月剩余额度：
+                <span class="month-total-amount ${remainingClass}">${remainingText}</span>
+                </span>
             `;
             
             // 添加新的累计金额元素
