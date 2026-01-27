@@ -132,10 +132,9 @@
         }
         
         .total-section {
-            padding: 15px;
-            border-radius: 10px;
-            background-color: #f5f5f5;
-            margin-bottom: 20px;
+            padding: 0;
+            margin-top: 15px;
+            margin-bottom: 0;
         }
         
         .total-label {
@@ -159,20 +158,9 @@
         }
         
         .date-picker-section {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            background-color: #f9f9f9;
+            margin-top: 15px;
         }
-        
-        .date-picker-title {
-            font-size: 14px;
-            font-weight: 500;
-            color: #333;
-            margin-bottom: 12px;
-        }
-        
+
         .date-picker {
             width: 100%;
             padding: 10px;
@@ -180,14 +168,11 @@
             border-radius: 8px;
             font-size: 14px;
             background-color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
         
         .year-picker-section {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            background-color: #f9f9f9;
+            margin-top: 15px;
         }
     </style>
 </head>
@@ -203,14 +188,16 @@
                 <button class="tab-btn" onclick="switchTab('income')">收入分析</button>
             </div>
             
-            <div class="date-picker-section">
-                <div class="date-picker-title">选择月份</div>
-                <input type="month" class="date-picker" id="datePicker">
-            </div>
-            
-            <div class="total-section">
-                <div class="total-label" id="totalLabel">当月支出总额</div>
-                <div class="total-amount expense" id="totalAmount">¥0</div>
+            <!-- 月份筛选和总额容器 -->
+            <div style="background-color: #ffffff; border-radius: 12px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); padding: 15px; margin-bottom: 20px;">
+                <div class="date-picker-section">
+                    <input type="month" class="date-picker" id="datePicker">
+                </div>
+                
+                <div class="total-section">
+                    <div class="total-label" id="totalLabel">当月支出总额</div>
+                    <div class="total-amount expense" id="totalAmount">¥0</div>
+                </div>
             </div>
             
             <div class="chart-container">
@@ -222,15 +209,17 @@
                 </div>
             </div>
             
-            <div class="year-picker-section">
-                <div class="date-picker-title">选择年份</div>
-                <select class="date-picker" id="yearPicker">
-                </select>
-            </div>
-            
-            <div class="total-section">
-                <div class="total-label" id="yearTotalLabel">年度支出总额</div>
-                <div class="total-amount expense" id="yearTotalAmount">¥0</div>
+            <!-- 年份筛选和总额容器 -->
+            <div style="background-color: #ffffff; border-radius: 12px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); padding: 15px; margin-bottom: 20px;">
+                <div class="year-picker-section">
+                    <select class="date-picker" id="yearPicker">
+                    </select>
+                </div>
+                
+                <div class="total-section">
+                    <div class="total-label" id="yearTotalLabel">年度支出总额</div>
+                    <div class="total-amount expense" id="yearTotalAmount">¥0</div>
+                </div>
             </div>
             
             <div class="chart-container">
