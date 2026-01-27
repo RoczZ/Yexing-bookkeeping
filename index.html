@@ -18,193 +18,299 @@
                 <span class="logo-text">夜行记账</span>
             </div>
             
-            <!-- 模块1：日期和收支统计 -->
-            <div class="header-section">
-                <div class="date" id="currentDate">2026年1月24日 <span class="days-left" id="daysLeft">本月剩余XXXX天</span></div>
-                <div class="today-stats">
-                    <div class="stat-item">
-                        <span class="label">累计支出</span>
-                        <span class="value">XXXX元</span>
+            <!-- 统计和操作区域 -->
+            <div style="background-color: #ffffff; border-radius: 12px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); padding: 20px; margin-bottom: 20px;">
+                <!-- 模块1：日期和收支统计 -->
+                <div class="header-section">
+                    <div class="date" id="currentDate">2026年1月24日 <span class="days-left" id="daysLeft">本月剩余XXXX天</span></div>
+                    <div class="today-stats">
+                        <div class="stat-item">
+                            <span class="label">累计支出</span>
+                            <span class="value">XXXX元</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="label">累计收入</span>
+                            <span class="value">XXXX元</span>
+                        </div>
+                        <div class="stat-item total">
+                            <span class="label">合计</span>
+                            <span class="value">XXXX元</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="label">2026全年存款金额</span>
+                            <span class="value">XXXX元</span>
+                        </div>
                     </div>
-                    <div class="stat-item">
-                        <span class="label">累计收入</span>
-                        <span class="value">XXXX元</span>
-                    </div>
-                    <div class="stat-item total">
-                        <span class="label">合计</span>
-                        <span class="value">XXXX元</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="label">2026全年存款金额</span>
-                        <span class="value">XXXX元</span>
-                    </div>
+                </div>
+                
+                <script>
+                    // 计算本月剩余天数
+                    function updateDateInfo() {
+                        const now = new Date();
+                        const currentYear = now.getFullYear();
+                        const currentMonth = now.getMonth() + 1; // 月份从0开始，需要+1
+                        const currentDay = now.getDate();
+                        
+                        // 获取本月最后一天
+                        const lastDayOfMonth = new Date(currentYear, currentMonth, 0).getDate();
+                        
+                        // 计算剩余天数
+                        const daysLeft = lastDayOfMonth - currentDay;
+                        
+                        // 格式化日期显示
+                        const formattedDate = `${currentYear}年${currentMonth.toString().padStart(2, '0')}月${currentDay.toString().padStart(2, '0')}日`;
+                        
+                        // 更新页面显示
+                        document.getElementById('currentDate').innerHTML = `${formattedDate} <span class="days-left" id="daysLeft">本月剩余${daysLeft}天</span>`;
+                    }
+                    
+                    // 计算当月支出总和
+                    function calculateMonthlyExpense() {
+                        const now = new Date();
+                        const currentYear = now.getFullYear();
+                        const currentMonth = now.getMonth() + 1; // 月份从0开始，需要+1
+                        
+                        // 从localStorage获取所有记录
+                        const records = JSON.parse(localStorage.getItem('financeRecords') || '[]');
+                        
+                        // 筛选当月的支出记录
+                        const monthlyExpenses = records.filter(record => {
+                            // 检查是否是支出
+                            if (record.category !== 'expense') return false;
+                            
+                            // 检查是否是当月
+                            const recordDate = record.date;
+                            const recordYear = parseInt(recordDate.split('年')[0]);
+                            const recordMonth = parseInt(recordDate.split('年')[1].split('月')[0]);
+                            
+                            return recordYear === currentYear && recordMonth === currentMonth;
+                        });
+                        
+                        // 计算支出总和
+                        const totalExpense = monthlyExpenses.reduce((sum, record) => sum + record.amount, 0);
+                        
+                        return totalExpense;
+                    }
+                    
+                    // 计算当月收入总和
+                    function calculateMonthlyIncome() {
+                        const now = new Date();
+                        const currentYear = now.getFullYear();
+                        const currentMonth = now.getMonth() + 1; // 月份从0开始，需要+1
+                        
+                        // 从localStorage获取所有记录
+                        const records = JSON.parse(localStorage.getItem('financeRecords') || '[]');
+                        
+                        // 筛选当月的收入记录
+                        const monthlyIncomes = records.filter(record => {
+                            // 检查是否是收入
+                            if (record.category !== 'income') return false;
+                            
+                            // 检查是否是当月
+                            const recordDate = record.date;
+                            const recordYear = parseInt(recordDate.split('年')[0]);
+                            const recordMonth = parseInt(recordDate.split('年')[1].split('月')[0]);
+                            
+                            return recordYear === currentYear && recordMonth === currentMonth;
+                        });
+                        
+                        // 计算收入总和
+                        const totalIncome = monthlyIncomes.reduce((sum, record) => sum + record.amount, 0);
+                        
+                        return totalIncome;
+                    }
+                    
+                    // 计算2026全年存款金额
+                    function calculateYearlySavings() {
+                        const targetYear = 2026;
+                        
+                        // 从localStorage获取所有记录
+                        const records = JSON.parse(localStorage.getItem('financeRecords') || '[]');
+                        
+                        // 筛选2026年的收入记录
+                        const yearlyIncomes = records.filter(record => {
+                            if (record.category !== 'income') return false;
+                            const recordYear = parseInt(record.date.split('年')[0]);
+                            return recordYear === targetYear;
+                        });
+                        
+                        // 筛选2026年的支出记录
+                        const yearlyExpenses = records.filter(record => {
+                            if (record.category !== 'expense') return false;
+                            const recordYear = parseInt(record.date.split('年')[0]);
+                            return recordYear === targetYear;
+                        });
+                        
+                        // 计算2026年收入总和
+                        const totalIncome = yearlyIncomes.reduce((sum, record) => sum + record.amount, 0);
+                        
+                        // 计算2026年支出总和
+                        const totalExpense = yearlyExpenses.reduce((sum, record) => sum + record.amount, 0);
+                        
+                        // 计算全年存款金额（收入-支出）
+                        const yearlySavings = totalIncome - totalExpense;
+                        
+                        return yearlySavings;
+                    }
+                    
+                    // 更新统计信息
+                    function updateStats() {
+                        // 更新日期信息
+                        updateDateInfo();
+                        
+                        // 计算当月支出
+                        const monthlyExpense = calculateMonthlyExpense();
+                        
+                        // 计算当月收入
+                        const monthlyIncome = calculateMonthlyIncome();
+                        
+                        // 计算合计
+                        const total = monthlyIncome - monthlyExpense;
+                        
+                        // 计算2026全年存款金额
+                        const yearlySavings = calculateYearlySavings();
+                        
+                        // 更新页面显示
+                        const expenseElement = document.querySelector('.today-stats .stat-item:nth-child(1) .value');
+                        if (expenseElement) {
+                            expenseElement.textContent = `${monthlyExpense}元`;
+                        }
+                        
+                        const incomeElement = document.querySelector('.today-stats .stat-item:nth-child(2) .value');
+                        if (incomeElement) {
+                            incomeElement.textContent = `${monthlyIncome}元`;
+                        }
+                        
+                        const totalElement = document.querySelector('.today-stats .stat-item.total .value');
+                        if (totalElement) {
+                            totalElement.textContent = `${total}元`;
+                        }
+                        
+                        const yearlySavingsElement = document.querySelector('.today-stats .stat-item:nth-child(4) .value');
+                        if (yearlySavingsElement) {
+                            yearlySavingsElement.textContent = `${yearlySavings}元`;
+                        }
+                    }
+                    
+                    // 页面加载时计算并显示
+                    window.onload = updateStats;
+                </script>
+                
+                <!-- 模块2：支出和收入按钮 -->
+                <div class="action-buttons" style="margin-top: 20px;">
+                    <a href="expense.html" class="expense-btn">支出</a>
+                    <a href="income.html" class="income-btn">收入</a>
                 </div>
             </div>
             
-            <script>
-                // 计算本月剩余天数
-                function updateDateInfo() {
-                    const now = new Date();
-                    const currentYear = now.getFullYear();
-                    const currentMonth = now.getMonth() + 1; // 月份从0开始，需要+1
-                    const currentDay = now.getDate();
-                    
-                    // 获取本月最后一天
-                    const lastDayOfMonth = new Date(currentYear, currentMonth, 0).getDate();
-                    
-                    // 计算剩余天数
-                    const daysLeft = lastDayOfMonth - currentDay;
-                    
-                    // 格式化日期显示
-                    const formattedDate = `${currentYear}年${currentMonth.toString().padStart(2, '0')}月${currentDay.toString().padStart(2, '0')}日`;
-                    
-                    // 更新页面显示
-                    document.getElementById('currentDate').innerHTML = `${formattedDate} <span class="days-left" id="daysLeft">本月剩余${daysLeft}天</span>`;
-                }
-                
-                // 计算当月支出总和
-                function calculateMonthlyExpense() {
-                    const now = new Date();
-                    const currentYear = now.getFullYear();
-                    const currentMonth = now.getMonth() + 1; // 月份从0开始，需要+1
-                    
-                    // 从localStorage获取所有记录
-                    const records = JSON.parse(localStorage.getItem('financeRecords') || '[]');
-                    
-                    // 筛选当月的支出记录
-                    const monthlyExpenses = records.filter(record => {
-                        // 检查是否是支出
-                        if (record.category !== 'expense') return false;
-                        
-                        // 检查是否是当月
-                        const recordDate = record.date;
-                        const recordYear = parseInt(recordDate.split('年')[0]);
-                        const recordMonth = parseInt(recordDate.split('年')[1].split('月')[0]);
-                        
-                        return recordYear === currentYear && recordMonth === currentMonth;
-                    });
-                    
-                    // 计算支出总和
-                    const totalExpense = monthlyExpenses.reduce((sum, record) => sum + record.amount, 0);
-                    
-                    return totalExpense;
-                }
-                
-                // 计算当月收入总和
-                function calculateMonthlyIncome() {
-                    const now = new Date();
-                    const currentYear = now.getFullYear();
-                    const currentMonth = now.getMonth() + 1; // 月份从0开始，需要+1
-                    
-                    // 从localStorage获取所有记录
-                    const records = JSON.parse(localStorage.getItem('financeRecords') || '[]');
-                    
-                    // 筛选当月的收入记录
-                    const monthlyIncomes = records.filter(record => {
-                        // 检查是否是收入
-                        if (record.category !== 'income') return false;
-                        
-                        // 检查是否是当月
-                        const recordDate = record.date;
-                        const recordYear = parseInt(recordDate.split('年')[0]);
-                        const recordMonth = parseInt(recordDate.split('年')[1].split('月')[0]);
-                        
-                        return recordYear === currentYear && recordMonth === currentMonth;
-                    });
-                    
-                    // 计算收入总和
-                    const totalIncome = monthlyIncomes.reduce((sum, record) => sum + record.amount, 0);
-                    
-                    return totalIncome;
-                }
-                
-                // 计算2026全年存款金额
-                function calculateYearlySavings() {
-                    const targetYear = 2026;
-                    
-                    // 从localStorage获取所有记录
-                    const records = JSON.parse(localStorage.getItem('financeRecords') || '[]');
-                    
-                    // 筛选2026年的收入记录
-                    const yearlyIncomes = records.filter(record => {
-                        if (record.category !== 'income') return false;
-                        const recordYear = parseInt(record.date.split('年')[0]);
-                        return recordYear === targetYear;
-                    });
-                    
-                    // 筛选2026年的支出记录
-                    const yearlyExpenses = records.filter(record => {
-                        if (record.category !== 'expense') return false;
-                        const recordYear = parseInt(record.date.split('年')[0]);
-                        return recordYear === targetYear;
-                    });
-                    
-                    // 计算2026年收入总和
-                    const totalIncome = yearlyIncomes.reduce((sum, record) => sum + record.amount, 0);
-                    
-                    // 计算2026年支出总和
-                    const totalExpense = yearlyExpenses.reduce((sum, record) => sum + record.amount, 0);
-                    
-                    // 计算全年存款金额（收入-支出）
-                    const yearlySavings = totalIncome - totalExpense;
-                    
-                    return yearlySavings;
-                }
-                
-                // 更新统计信息
-                function updateStats() {
-                    // 更新日期信息
-                    updateDateInfo();
-                    
-                    // 计算当月支出
-                    const monthlyExpense = calculateMonthlyExpense();
-                    
-                    // 计算当月收入
-                    const monthlyIncome = calculateMonthlyIncome();
-                    
-                    // 计算合计
-                    const total = monthlyIncome - monthlyExpense;
-                    
-                    // 计算2026全年存款金额
-                    const yearlySavings = calculateYearlySavings();
-                    
-                    // 更新页面显示
-                    const expenseElement = document.querySelector('.today-stats .stat-item:nth-child(1) .value');
-                    if (expenseElement) {
-                        expenseElement.textContent = `${monthlyExpense}元`;
-                    }
-                    
-                    const incomeElement = document.querySelector('.today-stats .stat-item:nth-child(2) .value');
-                    if (incomeElement) {
-                        incomeElement.textContent = `${monthlyIncome}元`;
-                    }
-                    
-                    const totalElement = document.querySelector('.today-stats .stat-item.total .value');
-                    if (totalElement) {
-                        totalElement.textContent = `${total}元`;
-                    }
-                    
-                    const yearlySavingsElement = document.querySelector('.today-stats .stat-item:nth-child(4) .value');
-                    if (yearlySavingsElement) {
-                        yearlySavingsElement.textContent = `${yearlySavings}元`;
-                    }
-                }
-                
-                // 页面加载时计算并显示
-                window.onload = updateStats;
-            </script>
-            
-            <!-- 模块2：支出和收入按钮 -->
-            <div class="action-buttons">
-                <a href="expense.html" class="expense-btn">支出</a>
-                <a href="income.html" class="income-btn">收入</a>
-            </div>
-            
-            <!-- 查看资金流水 -->
-            <div style="margin-top: 15px; margin-bottom: 80px;">
-                <a href="records.html" style="display: block; text-align: center; padding: 12px; background-color: #f5f5f5; color: #000; text-decoration: none; border-radius: 10px; font-size: 14px;">查看资金流水</a>
+            <!-- 近7天流水 -->
+            <div class="recent-bills" style="margin-top: 20px; margin-bottom: 80px;">
+                <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 15px; position: relative;">
+                    <h3 style="font-size: 14px; font-weight: 500; color: #666; margin: 0;">近7天流水</h3>
+                    <button id="sortButton" onclick="toggleSort()" style="font-size: 12px; color: #666; background: none; border: 1px solid #ddd; padding: 4px 10px; border-radius: 12px; cursor: pointer; position: absolute; right: 0;">按时间</button>
+                </div>
+                <div id="recentBillsList" style="display: flex; flex-direction: column; gap: 10px;">
+                    <div style="text-align: center; color: #999; font-size: 14px; padding: 20px;">暂无数据</div>
+                </div>
             </div>
         </div>
+        
+        <script>
+            // 排序方式：time 或 amount
+            let currentSort = 'time';
+            
+            // 计算近7天账单
+            function calculateRecentBills() {
+                const now = new Date();
+                const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                
+                // 从localStorage获取所有记录
+                const records = JSON.parse(localStorage.getItem('financeRecords') || '[]');
+                
+                // 筛选近7天的记录
+                const recentRecords = records.filter(record => {
+                    const recordDateStr = record.date;
+                    const [year, month, day] = recordDateStr.match(/(\d+)年(\d+)月(\d+)日/).slice(1).map(Number);
+                    const recordDate = new Date(year, month - 1, day);
+                    return recordDate >= sevenDaysAgo && recordDate <= now;
+                });
+                
+                // 根据当前排序方式排序
+                if (currentSort === 'time') {
+                    // 按日期降序排序
+                    recentRecords.sort((a, b) => {
+                        const aDateStr = a.date;
+                        const bDateStr = b.date;
+                        const [aYear, aMonth, aDay] = aDateStr.match(/(\d+)年(\d+)月(\d+)日/).slice(1).map(Number);
+                        const [bYear, bMonth, bDay] = bDateStr.match(/(\d+)年(\d+)月(\d+)日/).slice(1).map(Number);
+                        const aDate = new Date(aYear, aMonth - 1, aDay);
+                        const bDate = new Date(bYear, bMonth - 1, bDay);
+                        return bDate - aDate;
+                    });
+                } else {
+                    // 按金额降序排序
+                    recentRecords.sort((a, b) => {
+                        return b.amount - a.amount;
+                    });
+                }
+                
+                return recentRecords;
+            }
+            
+            // 切换排序方式
+            function toggleSort() {
+                const sortButton = document.getElementById('sortButton');
+                if (currentSort === 'time') {
+                    currentSort = 'amount';
+                    sortButton.textContent = '按金额';
+                } else {
+                    currentSort = 'time';
+                    sortButton.textContent = '按时间';
+                }
+                displayRecentBills();
+            }
+            
+            // 显示近7天账单
+            function displayRecentBills() {
+                const recentRecords = calculateRecentBills();
+                const billsList = document.getElementById('recentBillsList');
+                
+                if (!recentRecords || recentRecords.length === 0) {
+                    billsList.innerHTML = '<div style="text-align: center; color: #999; font-size: 14px; padding: 20px;">暂无数据</div>';
+                    return;
+                }
+                
+                let html = '';
+                recentRecords.forEach(record => {
+                    const isExpense = record.category === 'expense';
+                    const amountClass = isExpense ? 'expense-amount' : 'income-amount';
+                    const amountSign = isExpense ? '-' : '+';
+                    
+                    html += `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background-color: #f9f9f9; border-radius: 8px;">
+                            <div>
+                                <div style="font-size: 14px; color: #333;">${record.date}</div>
+                                <div style="font-size: 12px; color: #999; margin-top: 2px;">${record.type}</div>
+                            </div>
+                            <div style="font-size: 14px; font-weight: 600; color: ${isExpense ? '#ff3b30' : '#34c759'};">
+                                ${amountSign}¥${record.amount.toFixed(2)}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                billsList.innerHTML = html;
+            }
+            
+            // 更新统计信息时同时更新近7天账单
+            const originalUpdateStats = window.onload;
+            window.onload = function() {
+                if (originalUpdateStats) {
+                    originalUpdateStats();
+                }
+                displayRecentBills();
+            };
+        </script>
         
         <!-- 底部导航栏 -->
         <nav class="bottom-nav">
