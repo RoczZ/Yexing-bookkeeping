@@ -18,10 +18,118 @@
             text-align: center;
         }
         
-        .empty-content {
+        /* 日历容器 */
+        .calendar-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 12px;
+            margin-bottom: 20px;
+        }
+        
+        /* 月份导航 */
+        .month-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .month-nav button {
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f5f5f5;
+            color: #333;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .month-nav button:hover {
+            border-color: #000;
+            background-color: #f0f0f0;
+        }
+        
+        .current-month {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        /* 星期标题 */
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px;
+            margin-bottom: 6px;
+        }
+        
+        .weekday {
             text-align: center;
-            padding: 100px 20px;
+            font-size: 10px;
+            font-weight: 500;
+            color: #666;
+            padding: 6px 0;
+        }
+        
+        /* 日历格子 */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 3px;
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            padding: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .calendar-day:hover {
+            border-color: #000;
+            background-color: #f0f0f0;
+        }
+        
+        .calendar-day.other-month {
+            background-color: #f0f0f0;
             color: #999;
+        }
+        
+        .calendar-day.today {
+            border-color: #000;
+            background-color: #f0f0f0;
+            font-weight: 500;
+        }
+        
+        .day-number {
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 1px;
+        }
+        
+        .day-amount {
+            font-size: 9px;
+            font-weight: 600;
+        }
+        
+        .day-amount.positive {
+            color: #ff3b30;
+        }
+        
+        .day-amount.negative {
+            color: #34c759;
+        }
+        
+        .empty-day {
+            aspect-ratio: 1;
         }
     </style>
 </head>
@@ -29,10 +137,32 @@
     <div class="app-container">
         <!-- 主内容区域 -->
         <div class="main-content me-page">
-            <h1 class="page-title">我的</h1>
+            <h1 class="page-title">存钱计划</h1>
             
-            <div class="empty-content">
-                <p>页面建设中</p>
+            <!-- 日历容器 -->
+            <div class="calendar-container">
+                <!-- 月份导航 -->
+                <div class="month-nav">
+                    <button onclick="changeMonth(-1)">← 上月</button>
+                    <div class="current-month" id="currentMonth">2026年1月</div>
+                    <button onclick="changeMonth(1)">下月 →</button>
+                </div>
+                
+                <!-- 星期标题 -->
+                <div class="weekdays">
+                    <div class="weekday">日</div>
+                    <div class="weekday">一</div>
+                    <div class="weekday">二</div>
+                    <div class="weekday">三</div>
+                    <div class="weekday">四</div>
+                    <div class="weekday">五</div>
+                    <div class="weekday">六</div>
+                </div>
+                
+                <!-- 日历格子 -->
+                <div class="calendar-grid" id="calendarGrid">
+                    <!-- 日历格子将通过JavaScript动态生成 -->
+                </div>
             </div>
         </div>
         
@@ -43,5 +173,120 @@
             <a href="me.html" class="bottom-nav-item active">我的</a>
         </nav>
     </div>
+    
+    <script>
+        let currentDate = new Date();
+        
+        // 初始化日历
+        function initCalendar() {
+            generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+        }
+        
+        // 切换月份
+        function changeMonth(direction) {
+            currentDate.setMonth(currentDate.getMonth() + direction);
+            generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+        }
+        
+        // 生成日历
+        function generateCalendar(year, month) {
+            const calendarGrid = document.getElementById('calendarGrid');
+            const currentMonthElement = document.getElementById('currentMonth');
+            
+            // 更新当前月份显示
+            currentMonthElement.textContent = `${year}年${month + 1}月`;
+            
+            // 获取当月第一天
+            const firstDay = new Date(year, month, 1);
+            // 获取当月最后一天
+            const lastDay = new Date(year, month + 1, 0);
+            // 获取当月第一天是星期几
+            const startDayOfWeek = firstDay.getDay();
+            // 获取当月天数
+            const daysInMonth = lastDay.getDate();
+            
+            // 获取上个月最后一天
+            const prevMonthLastDay = new Date(year, month, 0).getDate();
+            
+            // 清空日历格子
+            calendarGrid.innerHTML = '';
+            
+            // 添加上个月的日期
+            for (let i = startDayOfWeek - 1; i >= 0; i--) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day other-month';
+                dayElement.innerHTML = `
+                    <div class="day-number">${prevMonthLastDay - i}</div>
+                    <div class="day-amount"></div>
+                `;
+                calendarGrid.appendChild(dayElement);
+            }
+            
+            // 添加当月的日期
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dayElement = document.createElement('div');
+                const isToday = i === new Date().getDate() && 
+                               month === new Date().getMonth() && 
+                               year === new Date().getFullYear();
+                
+                dayElement.className = `calendar-day ${isToday ? 'today' : ''}`;
+                
+                // 计算当天的收支合计
+                const dayAmount = calculateDayAmount(year, month + 1, i);
+                let amountClass = '';
+                let amountText = '';
+                
+                if (dayAmount > 0) {
+                    amountClass = 'positive';
+                    amountText = `+¥${dayAmount}`;
+                } else if (dayAmount < 0) {
+                    amountClass = 'negative';
+                    amountText = `-¥${Math.abs(dayAmount)}`;
+                }
+                
+                dayElement.innerHTML = `
+                    <div class="day-number">${i}</div>
+                    <div class="day-amount ${amountClass}">${amountText}</div>
+                `;
+                calendarGrid.appendChild(dayElement);
+            }
+            
+            // 计算需要添加的下个月日期数量
+            const remainingCells = 42 - (startDayOfWeek + daysInMonth); // 42是6行7列的总格子数
+            
+            // 添加下个月的日期
+            for (let i = 1; i <= remainingCells; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day other-month';
+                dayElement.innerHTML = `
+                    <div class="day-number">${i}</div>
+                    <div class="day-amount"></div>
+                `;
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+        
+        // 计算当天的收支合计
+        function calculateDayAmount(year, month, day) {
+            const records = JSON.parse(localStorage.getItem('financeRecords') || '[]');
+            const targetDate = `${year}年${month.toString().padStart(2, '0')}月${day.toString().padStart(2, '0')}日`;
+            
+            return records.reduce((total, record) => {
+                if (record.date === targetDate) {
+                    if (record.category === 'income') {
+                        return total + record.amount;
+                    } else {
+                        return total - record.amount;
+                    }
+                }
+                return total;
+            }, 0);
+        }
+        
+        // 页面加载完成后初始化
+        window.onload = function() {
+            initCalendar();
+        };
+    </script>
 </body>
 </html>
