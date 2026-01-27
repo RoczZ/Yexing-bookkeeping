@@ -523,9 +523,9 @@
                 totalBudget = monthlySalary - monthlyRent - monthlySavings;
             }
             
-            // 计算当月剩余额度：剩余额度 = 当月累计金额 - 当月额度
+            // 计算当月剩余额度：剩余额度 = 当月额度 + 当月累计金额
             // 按照用户要求的计算公式
-            let remaining = total - totalBudget;
+            let remaining = totalBudget + total;
             
             const totalElement = document.createElement('div');
             totalElement.className = 'month-total';
