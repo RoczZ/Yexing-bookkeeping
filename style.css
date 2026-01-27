@@ -35,6 +35,9 @@ body {
     padding: 20px;
     flex: 1;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 /* 为滚动内容添加底部padding，避免被导航栏遮挡 */
@@ -48,14 +51,22 @@ body {
     align-items: center;
     justify-content: center;
     gap: 12px;
-    margin-bottom: 40px;
-    margin-top: 30px;
+    margin-bottom: 30px;
+    margin-top: 20px;
 }
 
-.logo-text {
-    font-size: 24px;
-    font-weight: 700;
-    color: #000;
+/* 模块1：日期和收支统计 */
+.header-section {
+    margin-bottom: 20px;
+    flex: 1;
+}
+
+/* 操作按钮区域 */
+.actions-section {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .logo {
