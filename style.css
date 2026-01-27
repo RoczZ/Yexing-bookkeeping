@@ -175,6 +175,8 @@ body {
     padding: 12px 0;
     z-index: 1000;
     padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    position: sticky;
+    bottom: 0;
 }
 
 .bottom-nav-item {
