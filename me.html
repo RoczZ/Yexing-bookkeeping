@@ -18,6 +18,20 @@
             text-align: center;
         }
         
+        /* 日期显示样式 */
+        .header-section .date {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 12px;
+        }
+        
+        .header-section .days-left {
+            font-size: 12px;
+            color: #666;
+            margin-left: 8px;
+        }
+        
         /* 日历容器 */
         .calendar-container {
             background-color: #ffffff;
@@ -161,7 +175,42 @@
     <div class="app-container">
         <!-- 主内容区域 -->
         <div class="main-content me-page">
-            <h1 class="page-title">存钱计划</h1>
+            <h1 class="page-title">存钱助手</h1>
+            
+            <!-- 工资和存款设置模块 -->
+            <div class="finance-settings" style="background-color: #ffffff; border-radius: 12px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); padding: 20px; margin-bottom: 20px;">
+                <!-- 月均工资 -->
+                <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                    <div style="font-size: 13px; color: #333; width: 80px;">月均工资：</div>
+                    <input type="text" id="monthlySalary" placeholder="请输入" style="width: 80px; padding: 6px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; text-align: center;" disabled>
+                    <button onclick="toggleSalaryEdit()" id="salaryButton" style="margin-left: 8px; padding: 4px 10px; border: 1px solid #ddd; border-radius: 4px; background-color: #f5f5f5; color: #333; font-size: 12px; cursor: pointer;">填写</button>
+                    <button onclick="clearSalary()" id="salaryClearButton" style="margin-left: 4px; padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; background-color: #f8f9fa; color: #666; font-size: 10px; cursor: pointer; display: none;">清除</button>
+                </div>
+                
+                <!-- 月均房租 -->
+                <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                    <div style="font-size: 13px; color: #333; width: 80px;">月均房租：</div>
+                    <input type="text" id="monthlyRent" placeholder="请输入" style="width: 80px; padding: 6px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; text-align: center;" disabled>
+                    <button onclick="toggleRentEdit()" id="rentButton" style="margin-left: 8px; padding: 4px 10px; border: 1px solid #ddd; border-radius: 4px; background-color: #f5f5f5; color: #333; font-size: 12px; cursor: pointer;">填写</button>
+                    <button onclick="clearRent()" id="rentClearButton" style="margin-left: 4px; padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; background-color: #f8f9fa; color: #666; font-size: 10px; cursor: pointer; display: none;">清除</button>
+                </div>
+                
+                <!-- 计划存款 -->
+                <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                    <div style="font-size: 13px; color: #333; width: 80px;">计划存款：</div>
+                    <input type="text" id="monthlySavings" placeholder="请输入" style="width: 80px; padding: 6px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; text-align: center;" disabled>
+                    <button onclick="toggleSavingsEdit()" id="savingsButton" style="margin-left: 8px; padding: 4px 10px; border: 1px solid #ddd; border-radius: 4px; background-color: #f5f5f5; color: #333; font-size: 12px; cursor: pointer;">填写</button>
+                    <button onclick="clearSavings()" id="savingsClearButton" style="margin-left: 4px; padding: 4px 8px; border: 1px solid #ddd; border-radius: 4px; background-color: #f8f9fa; color: #666; font-size: 10px; cursor: pointer; display: none;">清除</button>
+                </div>
+                
+                <!-- 每天可消费额度 -->
+                <div style="padding-top: 12px; border-top: 1px solid #f0f0f0;">
+                    <div style="font-size: 12px; color: #333;">
+                        剩下额度：<span style="font-size: 14px; font-weight: 600; color: #000; margin-left: 4px; margin-right: 20px;" id="totalBudget">0元</span>
+                        每天额度：<span style="font-size: 14px; font-weight: 600; color: #000; margin-left: 4px;" id="dailyBudget">0元</span>
+                    </div>
+                </div>
+            </div>
             
             <!-- 日历容器 -->
             <div class="calendar-container">
@@ -200,6 +249,213 @@
     
     <script>
         let currentDate = new Date();
+        
+        // 切换工资编辑状态
+        function toggleSalaryEdit() {
+            const salaryInput = document.getElementById('monthlySalary');
+            const salaryButton = document.getElementById('salaryButton');
+            const salaryClearButton = document.getElementById('salaryClearButton');
+            
+            if (salaryInput.disabled) {
+                // 启用输入框
+                salaryInput.disabled = false;
+                salaryInput.focus();
+                salaryButton.textContent = '确认';
+            } else {
+                // 保存数据
+                const salary = parseInt(salaryInput.value);
+                if (!isNaN(salary) && salary > 0) {
+                    localStorage.setItem('monthlySalary', salary);
+                    updateDailyBudget();
+                    alert('月均工资已保存');
+                    // 禁用输入框
+                    salaryInput.disabled = true;
+                    salaryButton.textContent = '修改';
+                    // 显示清除按钮
+                    salaryClearButton.style.display = 'inline-block';
+                } else {
+                    alert('请输入有效的月均工资');
+                }
+            }
+        }
+        
+        // 切换房租编辑状态
+        function toggleRentEdit() {
+            const rentInput = document.getElementById('monthlyRent');
+            const rentButton = document.getElementById('rentButton');
+            const rentClearButton = document.getElementById('rentClearButton');
+            
+            if (rentInput.disabled) {
+                // 启用输入框
+                rentInput.disabled = false;
+                rentInput.focus();
+                rentButton.textContent = '确认';
+            } else {
+                // 保存数据
+                const rent = parseInt(rentInput.value);
+                if (!isNaN(rent) && rent >= 0) {
+                    localStorage.setItem('monthlyRent', rent);
+                    updateDailyBudget();
+                    alert('月均房租已保存');
+                    // 禁用输入框
+                    rentInput.disabled = true;
+                    rentButton.textContent = '修改';
+                    // 显示清除按钮
+                    rentClearButton.style.display = 'inline-block';
+                } else {
+                    alert('请输入有效的月均房租');
+                }
+            }
+        }
+        
+        // 切换存款编辑状态
+        function toggleSavingsEdit() {
+            const savingsInput = document.getElementById('monthlySavings');
+            const savingsButton = document.getElementById('savingsButton');
+            const savingsClearButton = document.getElementById('savingsClearButton');
+            
+            if (savingsInput.disabled) {
+                // 启用输入框
+                savingsInput.disabled = false;
+                savingsInput.focus();
+                savingsButton.textContent = '确认';
+            } else {
+                // 保存数据
+                const savings = parseInt(savingsInput.value);
+                if (!isNaN(savings) && savings >= 0) {
+                    localStorage.setItem('monthlySavings', savings);
+                    updateDailyBudget();
+                    alert('计划存款已保存');
+                    // 禁用输入框
+                    savingsInput.disabled = true;
+                    savingsButton.textContent = '修改';
+                    // 显示清除按钮
+                    savingsClearButton.style.display = 'inline-block';
+                } else {
+                    alert('请输入有效的计划存款');
+                }
+            }
+        }
+        
+        // 清除工资数据
+        function clearSalary() {
+            const salaryInput = document.getElementById('monthlySalary');
+            const salaryButton = document.getElementById('salaryButton');
+            const salaryClearButton = document.getElementById('salaryClearButton');
+            
+            localStorage.removeItem('monthlySalary');
+            salaryInput.value = '';
+            updateDailyBudget();
+            // 更新按钮文本
+            salaryButton.textContent = '填写';
+            // 隐藏清除按钮
+            salaryClearButton.style.display = 'none';
+            alert('月均工资数据已清除');
+        }
+        
+        // 清除房租数据
+        function clearRent() {
+            const rentInput = document.getElementById('monthlyRent');
+            const rentButton = document.getElementById('rentButton');
+            const rentClearButton = document.getElementById('rentClearButton');
+            
+            localStorage.removeItem('monthlyRent');
+            rentInput.value = '';
+            updateDailyBudget();
+            // 更新按钮文本
+            rentButton.textContent = '填写';
+            // 隐藏清除按钮
+            rentClearButton.style.display = 'none';
+            alert('月均房租数据已清除');
+        }
+        
+        // 清除存款数据
+        function clearSavings() {
+            const savingsInput = document.getElementById('monthlySavings');
+            const savingsButton = document.getElementById('savingsButton');
+            const savingsClearButton = document.getElementById('savingsClearButton');
+            
+            localStorage.removeItem('monthlySavings');
+            savingsInput.value = '';
+            updateDailyBudget();
+            // 更新按钮文本
+            savingsButton.textContent = '填写';
+            // 隐藏清除按钮
+            savingsClearButton.style.display = 'none';
+            alert('计划存款数据已清除');
+        }
+        
+        // 更新消费额度
+        function updateDailyBudget() {
+            const monthlySalary = parseInt(localStorage.getItem('monthlySalary') || '0');
+            const monthlyRent = parseInt(localStorage.getItem('monthlyRent') || '0');
+            const monthlySavings = parseInt(localStorage.getItem('monthlySavings') || '0');
+            
+            // 计算消费总额度
+            let totalBudget = 0;
+            if (monthlySalary > (monthlyRent + monthlySavings)) {
+                totalBudget = monthlySalary - monthlyRent - monthlySavings;
+            }
+            
+            // 获取当月天数
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            
+            // 计算每天可消费额度
+            let dailyBudget = 0;
+            if (totalBudget > 0) {
+                dailyBudget = Math.floor(totalBudget / daysInMonth);
+            }
+            
+            // 更新显示
+            document.getElementById('totalBudget').textContent = `${totalBudget}元`;
+            document.getElementById('dailyBudget').textContent = `${dailyBudget}元`;
+        }
+        
+        // 初始化工资和存款设置
+        function initFinanceSettings() {
+            // 从localStorage读取数据
+            const monthlySalary = localStorage.getItem('monthlySalary') || '';
+            const monthlyRent = localStorage.getItem('monthlyRent') || '';
+            const monthlySavings = localStorage.getItem('monthlySavings') || '';
+            
+            // 填充输入框
+            document.getElementById('monthlySalary').value = monthlySalary;
+            document.getElementById('monthlyRent').value = monthlyRent;
+            document.getElementById('monthlySavings').value = monthlySavings;
+            
+            // 更新工资按钮和清除按钮
+            if (monthlySalary) {
+                document.getElementById('salaryButton').textContent = '修改';
+                document.getElementById('salaryClearButton').style.display = 'inline-block';
+            } else {
+                document.getElementById('salaryButton').textContent = '填写';
+                document.getElementById('salaryClearButton').style.display = 'none';
+            }
+            
+            // 更新房租按钮和清除按钮
+            if (monthlyRent) {
+                document.getElementById('rentButton').textContent = '修改';
+                document.getElementById('rentClearButton').style.display = 'inline-block';
+            } else {
+                document.getElementById('rentButton').textContent = '填写';
+                document.getElementById('rentClearButton').style.display = 'none';
+            }
+            
+            // 更新存款按钮和清除按钮
+            if (monthlySavings) {
+                document.getElementById('savingsButton').textContent = '修改';
+                document.getElementById('savingsClearButton').style.display = 'inline-block';
+            } else {
+                document.getElementById('savingsButton').textContent = '填写';
+                document.getElementById('savingsClearButton').style.display = 'none';
+            }
+            
+            // 更新每天可消费额度
+            updateDailyBudget();
+        }
         
         // 初始化日历
         function initCalendar() {
@@ -382,6 +638,7 @@
         
         // 页面加载完成后初始化
         window.onload = function() {
+            initFinanceSettings();
             initCalendar();
             
             // 为底部导航栏添加震动效果
