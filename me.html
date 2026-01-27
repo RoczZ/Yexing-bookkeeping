@@ -530,9 +530,10 @@
                 total = Math.ceil(total);
             }
             
-            // 计算当月剩余额度：剩余额度 = 当月累计金额 - 当月额度
+            // 计算当月剩余额度：剩余额度 = 当月累计金额 - 计划存款
             // 按照用户要求的计算公式
-            let remaining = total - totalBudget;
+            const monthlySavings = parseInt(localStorage.getItem('monthlySavings') || '0');
+            let remaining = total - monthlySavings;
             
             const totalElement = document.createElement('div');
             totalElement.className = 'month-total';
