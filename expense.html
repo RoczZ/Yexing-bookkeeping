@@ -212,6 +212,36 @@
                 // 清空错误提示
                 document.getElementById('errorMessage').textContent = '';
             });
+            
+            // 添加震动效果
+            addVibrationEffect();
+        }
+        
+        // 添加震动效果
+        function addVibrationEffect() {
+            // 为返回按钮添加震动效果
+            const backBtn = document.querySelector('.back-btn');
+            if (backBtn) {
+                backBtn.addEventListener('click', function(e) {
+                    // 检查设备是否支持震动
+                    if (navigator.vibrate) {
+                        navigator.vibrate(100); // 震动100毫秒
+                    }
+                    // 继续默认的点击行为（页面跳转）
+                });
+            }
+            
+            // 为提交按钮添加震动效果
+            const submitBtn = document.querySelector('.submit-btn');
+            if (submitBtn) {
+                submitBtn.addEventListener('click', function(e) {
+                    // 检查设备是否支持震动
+                    if (navigator.vibrate) {
+                        navigator.vibrate(100); // 震动100毫秒
+                    }
+                    // 继续默认的点击行为（提交表单）
+                });
+            }
         }
         
         // 提交支出

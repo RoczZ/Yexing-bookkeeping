@@ -309,7 +309,22 @@
                     originalUpdateStats();
                 }
                 displayRecentBills();
+                addVibrationEffect();
             };
+            
+            // 添加震动效果
+            function addVibrationEffect() {
+                const navItems = document.querySelectorAll('.bottom-nav-item');
+                navItems.forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        // 检查设备是否支持震动
+                        if (navigator.vibrate) {
+                            navigator.vibrate(100); // 震动100毫秒
+                        }
+                        // 继续默认的点击行为（页面跳转）
+                    });
+                });
+            }
         </script>
         
         <!-- 底部导航栏 -->
