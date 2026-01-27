@@ -41,6 +41,7 @@ body {
     padding: 20px;
     flex: 1;
     overflow-y: auto;
+    padding-bottom: calc(20px + 60px); /* 为底部导航栏留出空间 */
 }
 
 /* Logo样式 */
@@ -173,6 +174,7 @@ body {
     justify-content: space-around;
     padding: 12px 0;
     z-index: 1000;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
 }
 
 .bottom-nav-item {
@@ -190,7 +192,4 @@ body {
     font-weight: bold;
 }
 
-/* 为滚动内容添加底部padding，避免被导航栏遮挡 */
-.scrollable-content {
-    padding-bottom: 80px;
-}
+/* 移除重复的滚动内容样式 */
