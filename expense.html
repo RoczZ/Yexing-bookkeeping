@@ -104,6 +104,45 @@
             align-items: center;
             gap: 4px;
         }
+        
+        /* 数字键盘样式 */
+        .keyboard-section {
+            margin-top: 20px;
+        }
+        
+        .keyboard-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .keyboard-btn {
+            flex: 1;
+            padding: 16px;
+            margin: 0 5px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background-color: #f5f5f5;
+            color: #333;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .keyboard-btn:hover {
+            background-color: #e0e0e0;
+            border-color: #000;
+        }
+        
+        .keyboard-btn.delete-btn {
+            background-color: #f8f9fa;
+            color: #666;
+        }
+        
+        .keyboard-btn.delete-btn:hover {
+            background-color: #e9ecef;
+        }
     </style>
 </head>
 <body>
@@ -138,7 +177,31 @@
             <!-- 模块2：支出金额 -->
             <div class="amount-section">
                 <div class="section-title">支出金额</div>
-                <input type="text" class="amount-input" placeholder="请输入金额" id="amountInput">
+                <input type="text" class="amount-input" placeholder="请输入金额" id="amountInput" readonly>
+            </div>
+            
+            <!-- 数字键盘 -->
+            <div class="keyboard-section" style="margin-top: 20px;">
+                <div class="keyboard-row">
+                    <button class="keyboard-btn" onclick="addNumber('1')">1</button>
+                    <button class="keyboard-btn" onclick="addNumber('2')">2</button>
+                    <button class="keyboard-btn" onclick="addNumber('3')">3</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="keyboard-btn" onclick="addNumber('4')">4</button>
+                    <button class="keyboard-btn" onclick="addNumber('5')">5</button>
+                    <button class="keyboard-btn" onclick="addNumber('6')">6</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="keyboard-btn" onclick="addNumber('7')">7</button>
+                    <button class="keyboard-btn" onclick="addNumber('8')">8</button>
+                    <button class="keyboard-btn" onclick="addNumber('9')">9</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="keyboard-btn" onclick="addNumber('.')">.</button>
+                    <button class="keyboard-btn" onclick="addNumber('0')">0</button>
+                    <button class="keyboard-btn delete-btn" onclick="deleteNumber()">删除</button>
+                </div>
             </div>
             
             <!-- 错误提示 -->
@@ -308,6 +371,51 @@
             // 提交成功后跳转到首页
             alert('支出添加成功！');
             window.location.href = 'index.html';
+        }
+        
+        // 添加数字到输入框
+        function addNumber(num) {
+            const amountInput = document.getElementById('amountInput');
+            let currentValue = amountInput.value;
+            
+            // 处理小数点逻辑
+            if (num === '.') {
+                if (currentValue === '') {
+                    currentValue = '0.';
+                } else if (!currentValue.includes('.')) {
+                    currentValue += '.';
+                }
+            } else {
+                // 处理开头为0的情况
+                if (currentValue === '0' && num !== '.') {
+                    currentValue = num;
+                } else {
+                    currentValue += num;
+                }
+            }
+            
+            // 限制小数位数为2位
+            const parts = currentValue.split('.');
+            if (parts.length === 2 && parts[1].length > 2) {
+                currentValue = parts[0] + '.' + parts[1].substring(0, 2);
+            }
+            
+            amountInput.value = currentValue;
+            // 清空错误提示
+            document.getElementById('errorMessage').textContent = '';
+        }
+        
+        // 删除输入框中的最后一个字符
+        function deleteNumber() {
+            const amountInput = document.getElementById('amountInput');
+            let currentValue = amountInput.value;
+            
+            if (currentValue.length > 0) {
+                currentValue = currentValue.slice(0, -1);
+                amountInput.value = currentValue;
+            }
+            // 清空错误提示
+            document.getElementById('errorMessage').textContent = '';
         }
         
         // 页面加载完成后初始化
