@@ -38,12 +38,13 @@
         }
         
         .type-option {
-            padding: 14px;
+            padding: 12px;
             border: 1px solid #ddd;
-            border-radius: 10px;
+            border-radius: 8px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-size: 14px;
         }
         
         .type-option.selected {
@@ -71,12 +72,12 @@
         
         .submit-btn {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background-color: #000;
             color: #fff;
             border: none;
-            border-radius: 10px;
-            font-size: 16px;
+            border-radius: 8px;
+            font-size: 14px;
             font-weight: 500;
             cursor: pointer;
             transition: background-color 0.3s ease;
@@ -156,33 +157,36 @@
         <div class="main-content income-page">
             <a href="index.html" class="back-btn">← 返回</a>
             
-            <h1 class="page-title">收入页</h1>
+            <h1 class="page-title">收入</h1>
             
-            <!-- 模块0：日期选择 -->
-            <div class="date-section" style="margin-bottom: 30px;">
-                <div class="section-title">选择日期</div>
-                <input type="date" class="amount-input" id="datePicker">
-            </div>
-            
-            <!-- 模块1：收入类型 -->
-            <div class="type-section">
-                <div class="section-title">收入类型</div>
-                <div class="type-options">
-                    <div class="type-option" data-type="工资">工资</div>
-                    <div class="type-option" data-type="搬砖">搬砖</div>
-                    <div class="type-option" data-type="投资">投资</div>
-                    <div class="type-option" data-type="其他">其他</div>
+            <!-- 表单容器 -->
+            <div style="background-color: #ffffff; border-radius: 12px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); padding: 20px; margin-bottom: 20px;">
+                <!-- 模块0：日期选择 -->
+                <div class="date-section" style="margin-bottom: 20px;">
+                    <div class="section-title">日期</div>
+                    <input type="date" class="amount-input" id="datePicker">
                 </div>
-                <!-- 其他类型自定义输入 -->
-                <div class="other-input-section" style="margin-top: 16px; display: none;">
-                    <input type="text" class="amount-input" placeholder="请输入其他收入类型（限5字）" id="otherTypeInput" maxlength="5">
+                
+                <!-- 模块1：收入类型 -->
+                <div class="type-section" style="margin-bottom: 20px;">
+                    <div class="section-title">类型</div>
+                    <div class="type-options">
+                        <div class="type-option" data-type="工资">工资</div>
+                        <div class="type-option" data-type="搬砖">搬砖</div>
+                        <div class="type-option" data-type="投资">投资</div>
+                        <div class="type-option" data-type="其他">其他</div>
+                    </div>
+                    <!-- 其他类型自定义输入 -->
+                    <div class="other-input-section" style="margin-top: 16px; display: none;">
+                        <input type="text" class="amount-input" placeholder="请输入其他收入类型（限5字）" id="otherTypeInput" maxlength="5">
+                    </div>
                 </div>
-            </div>
-            
-            <!-- 模块2：收入金额 -->
-            <div class="amount-section">
-                <div class="section-title">收入金额</div>
-                <input type="text" class="amount-input" placeholder="请输入金额" id="amountInput" readonly>
+                
+                <!-- 模块2：收入金额 -->
+                <div class="amount-section">
+                    <div class="section-title">金额</div>
+                    <input type="text" class="amount-input" placeholder="请输入金额" id="amountInput" readonly>
+                </div>
             </div>
             
             <!-- 数字键盘 -->
