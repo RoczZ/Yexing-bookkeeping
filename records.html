@@ -9,6 +9,13 @@
         /* 记录页面特有样式 */
         .records-page {
             padding: 20px;
+            height: 100%;
+        }
+        
+        /* 记录列表样式 */
+        .records-list {
+            margin-top: 20px;
+            min-height: 200px;
         }
         
         .page-title {
@@ -440,11 +447,68 @@
             });
         }
         
+        // 添加下拉到底部提示
+        function addPullToBottomHint() {
+            // 创建提示元素
+            const hintElement = document.createElement('div');
+            hintElement.id = 'pullHint';
+            hintElement.style.cssText = `
+                position: fixed;
+                bottom: 100px;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: rgba(0, 0, 0, 0.7);
+                color: white;
+                padding: 8px 16px;
+                border-radius: 20px;
+                font-size: 14px;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                z-index: 9999;
+                pointer-events: none;
+            `;
+            hintElement.textContent = '已经到底啦';
+            document.body.appendChild(hintElement);
+            
+            // 监听滚动事件
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent) {
+                mainContent.addEventListener('scroll', function() {
+                    const scrollTop = mainContent.scrollTop;
+                    const scrollHeight = mainContent.scrollHeight;
+                    const clientHeight = mainContent.clientHeight;
+                    
+                    // 当滚动到底部时显示提示
+                    if (scrollTop + clientHeight >= scrollHeight - 10) {
+                        showPullHint();
+                    }
+                });
+            }
+        }
+        
+        // 显示下拉提示
+        function showPullHint() {
+            const hintElement = document.getElementById('pullHint');
+            if (hintElement) {
+                // 先确保元素不可见
+                hintElement.style.opacity = '0';
+                // 强制重排
+                void hintElement.offsetWidth;
+                // 显示元素
+                hintElement.style.opacity = '1';
+                // 2秒后隐藏
+                setTimeout(() => {
+                    hintElement.style.opacity = '0';
+                }, 2000);
+            }
+        }
+        
         // 页面加载完成后初始化
         window.onload = function() {
             initFilter();
             loadRecords();
             addVibrationEffect();
+            addPullToBottomHint();
         };
     </script>
 </body>
