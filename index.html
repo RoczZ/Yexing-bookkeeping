@@ -242,15 +242,26 @@
                 
                 // 根据当前排序方式排序
                 if (currentSort === 'time') {
-                    // 按日期降序排序
+                    // 按日期和时间降序排序
                     recentRecords.sort((a, b) => {
+                        // 解析日期
                         const aDateStr = a.date;
                         const bDateStr = b.date;
                         const [aYear, aMonth, aDay] = aDateStr.match(/(\d+)年(\d+)月(\d+)日/).slice(1).map(Number);
                         const [bYear, bMonth, bDay] = bDateStr.match(/(\d+)年(\d+)月(\d+)日/).slice(1).map(Number);
-                        const aDate = new Date(aYear, aMonth - 1, aDay);
-                        const bDate = new Date(bYear, bMonth - 1, bDay);
-                        return bDate - aDate;
+                        
+                        // 解析时间
+                        const aTimeStr = a.time;
+                        const bTimeStr = b.time;
+                        const [aHour, aMinute, aSecond] = aTimeStr.split(':').map(Number);
+                        const [bHour, bMinute, bSecond] = bTimeStr.split(':').map(Number);
+                        
+                        // 创建完整的日期时间对象
+                        const aDateTime = new Date(aYear, aMonth - 1, aDay, aHour, aMinute, aSecond || 0);
+                        const bDateTime = new Date(bYear, bMonth - 1, bDay, bHour, bMinute, bSecond || 0);
+                        
+                        // 降序排序（最新的在前）
+                        return bDateTime - aDateTime;
                     });
                 } else {
                     // 按金额降序排序
