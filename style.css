@@ -114,14 +114,23 @@ body {
 }
 
 .stat-item .label {
-    font-size: 14px;
+    font-size: 13px;
     color: #333;
 }
 
 .stat-item .value {
-    font-size: 15px;
+    font-size: 14px;
     color: #000;
     font-weight: 500;
+}
+
+/* 合计行保持较大字体 */
+.stat-item.total .label {
+    font-size: 14px;
+}
+
+.stat-item.total .value {
+    font-size: 15px;
 }
 
 /* 模块2：支出和收入按钮 */
