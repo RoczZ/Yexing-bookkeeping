@@ -112,16 +112,8 @@
             margin-top: 20px;
         }
         
-        .keyboard-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-        
         .keyboard-btn {
-            flex: 1;
-            padding: 12px;
-            margin: 0 4px;
+            padding: 16px;
             border: 1px solid #ddd;
             border-radius: 8px;
             background-color: #f5f5f5;
@@ -130,6 +122,26 @@
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .keyboard-btn.submit-btn {
+            background-color: #000;
+            color: #fff;
+            border: none;
+        }
+        
+        .keyboard-btn.submit-btn:hover {
+            background-color: #333;
+        }
+        
+        .keyboard-btn.delete-btn {
+            background-color: #f8f9fa;
+            color: #666;
+        }
+        
+        .keyboard-btn.delete-btn:hover {
+            background-color: #e0e0e0;
         }
         
         .keyboard-btn:hover {
@@ -190,34 +202,27 @@
             </div>
             
             <!-- 数字键盘 -->
-            <div class="keyboard-section" style="margin-top: 20px;">
-                <div class="keyboard-row">
-                    <button class="keyboard-btn" onclick="addNumber('1')">1</button>
-                    <button class="keyboard-btn" onclick="addNumber('2')">2</button>
-                    <button class="keyboard-btn" onclick="addNumber('3')">3</button>
-                </div>
-                <div class="keyboard-row">
-                    <button class="keyboard-btn" onclick="addNumber('4')">4</button>
-                    <button class="keyboard-btn" onclick="addNumber('5')">5</button>
-                    <button class="keyboard-btn" onclick="addNumber('6')">6</button>
-                </div>
-                <div class="keyboard-row">
-                    <button class="keyboard-btn" onclick="addNumber('7')">7</button>
-                    <button class="keyboard-btn" onclick="addNumber('8')">8</button>
-                    <button class="keyboard-btn" onclick="addNumber('9')">9</button>
-                </div>
-                <div class="keyboard-row">
-                    <button class="keyboard-btn" onclick="addNumber('.')">.</button>
-                    <button class="keyboard-btn" onclick="addNumber('0')">0</button>
-                    <button class="keyboard-btn delete-btn" onclick="deleteNumber()">删除</button>
-                </div>
+            <div class="keyboard-section" style="margin-top: 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+                <button class="keyboard-btn" onclick="addNumber('1')">1</button>
+                <button class="keyboard-btn" onclick="addNumber('2')">2</button>
+                <button class="keyboard-btn" onclick="addNumber('3')">3</button>
+                <button class="keyboard-btn delete-btn" onclick="deleteNumber()">删除</button>
+                
+                <button class="keyboard-btn" onclick="addNumber('4')">4</button>
+                <button class="keyboard-btn" onclick="addNumber('5')">5</button>
+                <button class="keyboard-btn" onclick="addNumber('6')">6</button>
+                <button class="keyboard-btn submit-btn" onclick="submitExpense()" style="grid-row: 2 / span 3; grid-column: 4;">提交</button>
+                
+                <button class="keyboard-btn" onclick="addNumber('7')">7</button>
+                <button class="keyboard-btn" onclick="addNumber('8')">8</button>
+                <button class="keyboard-btn" onclick="addNumber('9')">9</button>
+                
+                <button class="keyboard-btn" onclick="addNumber('0')" style="grid-column: 1 / span 2;">0</button>
+                <button class="keyboard-btn" onclick="addNumber('.')">.</button>
             </div>
             
             <!-- 错误提示 -->
             <div class="error-message" id="errorMessage"></div>
-            
-            <!-- 模块3：提交按钮 -->
-            <button class="submit-btn" onclick="submitExpense()">提交</button>
         </div>
     </div>
     
