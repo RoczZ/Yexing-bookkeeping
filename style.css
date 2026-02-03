@@ -55,6 +55,15 @@ body {
     gap: 12px;
     margin-bottom: 40px;
     margin-top: 30px;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+.logo-container * {
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 
 .logo-text {
