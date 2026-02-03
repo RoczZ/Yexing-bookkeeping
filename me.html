@@ -8,7 +8,7 @@
     <style>
         .me-page {
             padding: 20px;
-            height: 100%;
+            padding-bottom: calc(20px + 80px);
         }
         
         .page-title {
@@ -65,6 +65,7 @@
             position: relative;
             overflow-x: auto;
             padding-bottom: 10px;
+            background-color: #f9f9f9;
         }
         
         .kline-grid {
@@ -84,12 +85,14 @@
             align-items: flex-end;
             gap: 4px;
             padding: 0 5px;
+            min-height: 180px;
         }
         
         .kline-candle {
             flex: 1;
             min-width: 6px;
             position: relative;
+            height: 100%;
         }
         
         .kline-candle-body {
@@ -827,6 +830,26 @@
             const klineCandles = document.getElementById('klineCandles');
             const records = JSON.parse(localStorage.getItem('financeRecords') || '[]');
             
+            // 调试：检查数据
+            console.log('K线图数据检查:', {
+                recordsCount: records.length,
+                sampleRecords: records.slice(0, 3)
+            });
+            
+            // 如果没有数据，添加一些模拟数据用于测试
+            if (records.length === 0) {
+                console.log('没有数据，添加模拟数据');
+                const mockRecords = [
+                    { id: 1, type: '工资', amount: 5000, date: '2026年02月01日', time: '00:00:00', category: 'income' },
+                    { id: 2, type: '餐饮', amount: 100, date: '2026年02月01日', time: '00:00:00', category: 'expense' },
+                    { id: 3, type: '交通', amount: 50, date: '2026年02月02日', time: '00:00:00', category: 'expense' },
+                    { id: 4, type: '购物', amount: 200, date: '2026年02月03日', time: '00:00:00', category: 'expense' }
+                ];
+                localStorage.setItem('financeRecords', JSON.stringify(mockRecords));
+                records = mockRecords;
+                console.log('添加了模拟数据:', records);
+            }
+            
             // 获取最近7天的日期
             const days = [];
             for (let i = 6; i >= 0; i--) {
@@ -840,7 +863,7 @@
                 const year = day.getFullYear();
                 const month = day.getMonth() + 1;
                 const date = day.getDate();
-                const dateStr = `${year}年${month}月${date}日`;
+                const dateStr = `${year}年${month.toString().padStart(2, '0')}月${date.toString().padStart(2, '0')}日`;
                 
                 // 筛选当天的记录
                 const dayRecords = records.filter(record => record.date === dateStr);
@@ -873,9 +896,9 @@
             
             // 计算最大值和最小值，用于缩放K线
             const balances = dailyData.map(data => data.balance);
-            const maxBalance = Math.max(...balances, 0);
-            const minBalance = Math.min(...balances, 0);
-            const range = Math.max(maxBalance - minBalance, 100); // 确保有一定范围
+            const maxBalance = Math.max(...balances, 100); // 确保至少有100
+            const minBalance = Math.min(...balances, -100); // 确保至少有-100
+            const range = Math.max(maxBalance - minBalance, 200); // 确保有一定范围
             
             // 生成K线
             dailyData.forEach(data => {
@@ -886,17 +909,29 @@
                 const height = Math.abs(data.balance) / range * 160; // 160是图表高度减去边距
                 const bodyHeight = Math.min(height, 100); // 限制实体高度
                 
+                // 确保高度至少为1，避免蜡烛图不显示
+                const finalHeight = Math.max(height, 1);
+                const finalBodyHeight = Math.max(bodyHeight, 1);
+                
+                // 调试：检查每根蜡烛的数据
+                console.log('蜡烛图数据:', {
+                    date: data.date,
+                    balance: data.balance,
+                    height: finalHeight,
+                    bodyHeight: finalBodyHeight
+                });
+                
                 if (data.balance >= 0) {
                     // 收入大于支出
                     candle.innerHTML = `
-                        <div class="kline-candle-body" style="bottom: 0; height: ${bodyHeight}px;"></div>
-                        <div class="kline-candle-shadow" style="bottom: 0; height: ${height}px;"></div>
+                        <div class="kline-candle-body" style="bottom: 0; height: ${finalBodyHeight}px;"></div>
+                        <div class="kline-candle-shadow" style="bottom: 0; height: ${finalHeight}px;"></div>
                     `;
                 } else {
                     // 支出大于收入
                     candle.innerHTML = `
-                        <div class="kline-candle-body" style="top: ${160 - height}px; height: ${bodyHeight}px;"></div>
-                        <div class="kline-candle-shadow" style="top: ${160 - height}px; height: ${height}px;"></div>
+                        <div class="kline-candle-body" style="top: ${160 - finalHeight}px; height: ${finalBodyHeight}px;"></div>
+                        <div class="kline-candle-shadow" style="top: ${160 - finalHeight}px; height: ${finalHeight}px;"></div>
                     `;
                 }
                 
