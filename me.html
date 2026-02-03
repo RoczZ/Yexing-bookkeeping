@@ -43,6 +43,112 @@
             position: relative;
         }
         
+        /* 日K线图容器 */
+        .kline-container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .kline-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .kline-chart {
+            height: 200px;
+            position: relative;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        
+        .kline-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-top: 1px solid #f0f0f0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .kline-candles {
+            position: relative;
+            height: 100%;
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            padding: 0 5px;
+        }
+        
+        .kline-candle {
+            flex: 1;
+            min-width: 6px;
+            position: relative;
+        }
+        
+        .kline-candle-body {
+            position: absolute;
+            left: 0;
+            right: 0;
+            background-color: #ff3b30;
+            border-radius: 1px;
+        }
+        
+        .kline-candle.up .kline-candle-body {
+            background-color: #34c759;
+        }
+        
+        .kline-candle-shadow {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1px;
+            background-color: #999;
+        }
+        
+        .kline-date-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 10px;
+            color: #999;
+        }
+        
+        .kline-legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+            font-size: 10px;
+            color: #666;
+        }
+        
+        .kline-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .kline-legend-color {
+            width: 10px;
+            height: 10px;
+            border-radius: 1px;
+        }
+        
+        .kline-legend-color.up {
+            background-color: #34c759;
+        }
+        
+        .kline-legend-color.down {
+            background-color: #ff3b30;
+        }
+        
         /* 当月累计金额 */
         .month-total {
             margin-top: 12px;
@@ -236,6 +342,31 @@
                 <!-- 日历格子 -->
                 <div class="calendar-grid" id="calendarGrid">
                     <!-- 日历格子将通过JavaScript动态生成 -->
+                </div>
+            </div>
+            
+            <!-- 日K线图容器 -->
+            <div class="kline-container">
+                <div class="kline-title">收支日K线图</div>
+                <div class="kline-chart">
+                    <div class="kline-grid"></div>
+                    <div class="kline-candles" id="klineCandles">
+                        <!-- K线将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+                <div class="kline-date-labels">
+                    <span>1月24日</span>
+                    <span>1月30日</span>
+                </div>
+                <div class="kline-legend">
+                    <div class="kline-legend-item">
+                        <div class="kline-legend-color up"></div>
+                        <span>收入</span>
+                    </div>
+                    <div class="kline-legend-item">
+                        <div class="kline-legend-color down"></div>
+                        <span>支出</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -685,10 +816,93 @@
         window.onload = function() {
             initFinanceSettings();
             initCalendar();
+            generateKlineChart();
             
             // 为底部导航栏添加震动效果
             addVibrationEffect();
         };
+        
+        // 生成日K线图
+        function generateKlineChart() {
+            const klineCandles = document.getElementById('klineCandles');
+            const records = JSON.parse(localStorage.getItem('financeRecords') || '[]');
+            
+            // 获取最近7天的日期
+            const days = [];
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                days.push(date);
+            }
+            
+            // 计算每天的收支差额
+            const dailyData = days.map(day => {
+                const year = day.getFullYear();
+                const month = day.getMonth() + 1;
+                const date = day.getDate();
+                const dateStr = `${year}年${month}月${date}日`;
+                
+                // 筛选当天的记录
+                const dayRecords = records.filter(record => record.date === dateStr);
+                
+                // 计算收入和支出
+                let income = 0;
+                let expense = 0;
+                
+                dayRecords.forEach(record => {
+                    if (record.category === 'income') {
+                        income += record.amount;
+                    } else {
+                        expense += record.amount;
+                    }
+                });
+                
+                // 计算差额（收入 - 支出）
+                const balance = income - expense;
+                
+                return {
+                    date: dateStr,
+                    income,
+                    expense,
+                    balance
+                };
+            });
+            
+            // 清空现有K线
+            klineCandles.innerHTML = '';
+            
+            // 计算最大值和最小值，用于缩放K线
+            const balances = dailyData.map(data => data.balance);
+            const maxBalance = Math.max(...balances, 0);
+            const minBalance = Math.min(...balances, 0);
+            const range = Math.max(maxBalance - minBalance, 100); // 确保有一定范围
+            
+            // 生成K线
+            dailyData.forEach(data => {
+                const candle = document.createElement('div');
+                candle.className = `kline-candle ${data.balance >= 0 ? 'up' : 'down'}`;
+                
+                // 计算K线高度和位置
+                const height = Math.abs(data.balance) / range * 160; // 160是图表高度减去边距
+                const bodyHeight = Math.min(height, 100); // 限制实体高度
+                
+                if (data.balance >= 0) {
+                    // 收入大于支出
+                    candle.innerHTML = `
+                        <div class="kline-candle-body" style="bottom: 0; height: ${bodyHeight}px;"></div>
+                        <div class="kline-candle-shadow" style="bottom: 0; height: ${height}px;"></div>
+                    `;
+                } else {
+                    // 支出大于收入
+                    candle.innerHTML = `
+                        <div class="kline-candle-body" style="top: ${160 - height}px; height: ${bodyHeight}px;"></div>
+                        <div class="kline-candle-shadow" style="top: ${160 - height}px; height: ${height}px;"></div>
+                    `;
+                }
+                
+                klineCandles.appendChild(candle);
+            });
+        }
         
         // 添加震动效果
         function addVibrationEffect() {

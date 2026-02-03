@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>设置 - 夜行记账</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .settings-page {
+            padding: 20px;
+            height: 100%;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .back-btn {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #000;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .settings-section {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+        
+        .setting-label {
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .setting-action {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: #f5f5f5;
+            color: #333;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            border-color: #000;
+            background-color: #f0f0f0;
+        }
+        
+        .action-btn.primary {
+            border-color: #000;
+            background-color: #000;
+            color: white;
+        }
+        
+        .action-btn.primary:hover {
+            background-color: #333;
+        }
+        
+        .data-info {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+        
+        .about-content {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .version-info {
+            font-size: 12px;
+            color: #999;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="main-content settings-page">
+            <a href="index.html" class="back-btn">← 返回</a>
+            
+            <h1 class="page-title">软件设置</h1>
+            
+            <!-- 数据管理部分 -->
+            <div class="settings-section">
+                <div class="section-title">数据管理</div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">导出数据</div>
+                    <div class="setting-action">
+                        <button class="action-btn primary" onclick="exportData()">导出</button>
+                    </div>
+                </div>
+                
+                <div class="setting-item">
+                    <div class="setting-label">导入数据</div>
+                    <div class="setting-action">
+                        <input type="file" id="importFile" accept=".json" style="display: none;">
+                        <button class="action-btn" onclick="document.getElementById('importFile').click()">导入</button>
+                    </div>
+                </div>
+                
+
+                
+                <div class="data-info">
+                    <p>• 导出数据会生成JSON文件，可用于备份</p>
+                    <p>• 导入数据会覆盖现有数据，请谨慎操作</p>
+                </div>
+            </div>
+            
+            <!-- 关于部分 -->
+            <div class="settings-section">
+                <div class="section-title">关于夜行记账</div>
+                <div class="about-content">
+                    <p>夜行记账是一款轻量级个人记账应用，帮助你记录日常收支，掌握财务状况。</p>
+                    <p>主要功能：</p>
+                    <p>• 记录收入和支出</p>
+                    <p>• 查看收支统计</p>
+                    <p>• 日历视图展示</p>
+                    <p>• 收支日K线图</p>
+                    <p>• 数据导出/导入</p>
+                </div>
+                <div class="version-info">
+                    <p>版本：1.0.0</p>
+                    <p>© 2026 夜行记账</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部导航栏 -->
+        <nav class="bottom-nav">
+            <a href="index.html" class="bottom-nav-item">首页</a>
+            <a href="records.html" class="bottom-nav-item">账单</a>
+            <a href="me.html" class="bottom-nav-item">我的</a>
+        </nav>
+    </div>
+    
+    <script>
+        // 导出数据
+        function exportData() {
+            const records = JSON.parse(localStorage.getItem('financeRecords') || '[]');
+            const financeSettings = {
+                monthlySalary: localStorage.getItem('monthlySalary'),
+                monthlyRent: localStorage.getItem('monthlyRent'),
+                monthlySavings: localStorage.getItem('monthlySavings')
+            };
+            
+            const exportData = {
+                records,
+                settings: financeSettings,
+                exportDate: new Date().toISOString(),
+                version: '1.0.0'
+            };
+            
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `夜行记账数据_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            
+            alert('数据导出成功');
+        }
+        
+        // 导入数据
+        document.getElementById('importFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importData = JSON.parse(e.target.result);
+                    
+                    if (importData.records) {
+                        localStorage.setItem('financeRecords', JSON.stringify(importData.records));
+                    }
+                    
+                    if (importData.settings) {
+                        if (importData.settings.monthlySalary) {
+                            localStorage.setItem('monthlySalary', importData.settings.monthlySalary);
+                        }
+                        if (importData.settings.monthlyRent) {
+                            localStorage.setItem('monthlyRent', importData.settings.monthlyRent);
+                        }
+                        if (importData.settings.monthlySavings) {
+                            localStorage.setItem('monthlySavings', importData.settings.monthlySavings);
+                        }
+                    }
+                    
+                    alert('数据导入成功');
+                    window.location.reload();
+                } catch (error) {
+                    alert('导入失败：文件格式错误');
+                }
+            };
+            reader.readAsText(file);
+        });
+        
+
+    </script>
+</body>
+</html>
