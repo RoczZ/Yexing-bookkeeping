@@ -197,11 +197,7 @@
                         <div class="type-option" data-type="工资">工资</div>
                         <div class="type-option" data-type="搬砖">搬砖</div>
                         <div class="type-option" data-type="投资">投资</div>
-                        <div class="type-option" data-type="其他">其他</div>
-                    </div>
-                    <!-- 其他类型自定义输入 -->
-                    <div class="other-input-section" style="margin-top: 16px; display: none;">
-                        <input type="text" class="amount-input" placeholder="请输入其他收入类型（限5字）" id="otherTypeInput" maxlength="5">
+                        <div class="type-option" data-type="其他" contenteditable="true" id="otherTypeInput" maxlength="5" style="outline: none;">其他</div>
                     </div>
                 </div>
                 
@@ -251,7 +247,6 @@
             
             // 绑定类型选择事件
             const typeOptions = document.querySelectorAll('.type-option');
-            const otherInputSection = document.querySelector('.other-input-section');
             const otherTypeInput = document.getElementById('otherTypeInput');
             
             typeOptions.forEach(option => {
@@ -264,15 +259,11 @@
                     const type = this.dataset.type;
                     
                     if (type === '其他') {
-                        // 显示自定义输入框
-                        otherInputSection.style.display = 'block';
-                        // 聚焦到输入框
-                        otherTypeInput.focus();
-                        // 初始化为空
-                        selectedType = null;
+                        // 聚焦到可编辑div
+                        this.focus();
+                        // 保存当前内容
+                        selectedType = this.textContent.trim() || '其他';
                     } else {
-                        // 隐藏自定义输入框
-                        otherInputSection.style.display = 'none';
                         // 保存选中的类型
                         selectedType = type;
                     }
@@ -282,11 +273,11 @@
                 });
             });
             
-            // 其他类型输入框事件
+            // 其他类型可编辑div事件
             if (otherTypeInput) {
                 otherTypeInput.addEventListener('input', function() {
                     // 保存输入的类型
-                    selectedType = this.value.trim();
+                    selectedType = this.textContent.trim() || '其他';
                     // 清空错误提示
                     document.getElementById('errorMessage').textContent = '';
                 });
