@@ -259,10 +259,12 @@
                     const type = this.dataset.type;
                     
                     if (type === '其他') {
+                        // 清空文本内容
+                        this.textContent = '';
                         // 聚焦到可编辑div
                         this.focus();
-                        // 保存当前内容
-                        selectedType = this.textContent.trim() || '其他';
+                        // 初始化为空
+                        selectedType = '';
                     } else {
                         // 保存选中的类型
                         selectedType = type;
